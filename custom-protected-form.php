@@ -218,7 +218,7 @@ add_action( 'widgets_init', 'cpp_register_widgets' );
 function cpp_form( $output ) {
     global $post;
 
-	 /* Create Before form area */
+	/* Create Before form area */
     ob_start();
     dynamic_sidebar( 'widgetized-before-password-form' );
     $before_area = ob_get_contents();
@@ -235,9 +235,8 @@ function cpp_form( $output ) {
     $after_area = ob_get_contents();
     ob_end_clean();
 
-    $output = $before_area . '<form class="cpp-form" action="' . esc_attr( site_url( 'wp-login.php?action=postpass', 'login_post' ) ) . '" class="post-password-form" method="post">
-    ' . '<p>' . $cpp_intro . '</p>' . '
-    <label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" type="submit" name="Submit" value="' . esc_attr__( $cpp_button_text ) . '" />
+    $output = $before_area . '<p>' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr( site_url( 'wp-login.php?action=postpass', 'login_post' ) ) . '" class="post-password-form" method="post">
+    ' . '<label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" type="submit" name="Submit" value="' . esc_attr__( $cpp_button_text ) . '" />
     </form>' . $after_area ;
     return $output;
 }
@@ -245,7 +244,12 @@ function cpp_form( $output ) {
 add_filter( 'the_password_form', 'cpp_form', 11);
 
 
+function cpp_styles() {
+    wp_register_style( 'cpp-styles', 'cpp/css/style.css' );
+	wp_enqueue_style( 'cpp-styles' );
+}
 
+add_action('wp_enqueue_scripts', 'cpp_styles');
 
 // Sanitize text
 function sanitize_text( $text ) {
