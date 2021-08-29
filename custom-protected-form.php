@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Custom Password Protected
+Plugin Name: Customize Private & Protected
 Plugin URI: http://kirkclarke.com
-Description: Customize the default password protected text and add widgetization. 
+Description: Use WP Customizer to modify elements of password protected and private posts and pages.
 Version: 1.0.1
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
@@ -23,11 +23,11 @@ function cpp_register_customizer( $wp_customize ) {
 	);
 
 	//  =============================
-    //  = Protected Title Prefix    =
+    //  = Title Prefix    =
     //  =============================
 
 	$wp_customize->add_setting( 
-		'cpp_prefix', 
+		'cpp_prefix_protected', 
 		array(
 			'type' 			=> 'option',
 			'capability'	=> 'manage_options',
@@ -37,11 +37,30 @@ function cpp_register_customizer( $wp_customize ) {
 	);
 
 	$wp_customize->add_control( 
-		'cpp_prefix', 
+		'cpp_prefix_protected', 
 		array(
 			'label' 	=> 'Protected Title Prefix',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_prefix'
+			'settings'	=> 'cpp_prefix_protected'
+		) 
+	);
+
+	$wp_customize->add_setting( 
+		'cpp_prefix_private', 
+		array(
+			'type' 			=> 'option',
+			'capability'	=> 'manage_options',
+			'default' 		=> 'Private: ',
+			'sanitize_callback' => 'wp_kses_post',
+		) 
+	);
+
+	$wp_customize->add_control( 
+		'cpp_prefix_private', 
+		array(
+			'label' 	=> 'Private Title Prefix',
+			'section' 	=> 'cpp_plugin_settings',
+			'settings'	=> 'cpp_prefix_private'
 		) 
 	);
 
@@ -88,6 +107,53 @@ function cpp_register_customizer( $wp_customize ) {
 			'settings'	=> 'cpp_text_intro'
 		) 
 	);
+
+	//  =============================
+    //  = Protected Label Text                =
+    //  =============================
+
+	$wp_customize->add_setting( 
+		'cpp_label_text', 
+		array(
+			'type' 				=> 'option',
+			'capability'		=> 'manage_options',
+			'default' 			=> 'Password: ',
+			'sanitize_callback' => 'wp_kses_post',
+		) 
+	);
+
+	$wp_customize->add_control( 
+		'cpp_label_text', 
+		array(
+			'type'		=> 'textarea',
+			'label' 	=> 'Protected Label Text',
+			'section' 	=> 'cpp_plugin_settings',
+			'settings'	=> 'cpp_label_text'
+		) 
+	);
+
+	//  =============================
+    //  = Protected Button Text                =
+    //  =============================
+
+	$wp_customize->add_setting( 
+		'cpp_button_text', 
+		array(
+			'type' 				=> 'option',
+			'capability'		=> 'manage_options',
+			'default' 			=> 'Submit',
+			'sanitize_callback' => 'wp_kses_post',
+		) 
+	);
+
+	$wp_customize->add_control( 
+		'cpp_button_text', 
+		array(
+			'label' 	=> 'Protected Button Text',
+			'section' 	=> 'cpp_plugin_settings',
+			'settings'	=> 'cpp_button_text'
+		) 
+	);
 }
 
 add_action( 'customize_register', 'cpp_register_customizer' );
@@ -97,7 +163,7 @@ add_action( 'customize_register', 'cpp_register_customizer' );
  */
 
 function set_protected_prefix() {
-	$cpp_prefix = get_option( 'cpp_prefix', 'Protected: ' );
+	$cpp_prefix = get_option( 'cpp_prefix_protected', 'Protected: ' );
 	$cpp_hide_prefix = get_option( 'cpp_hide_prefix', false );
 	$cpp_prefix = ( true == $cpp_hide_prefix ) ? '' : $cpp_prefix . ' '; 
 	$cpp_prefix = ( post_password_required() ) ? $cpp_prefix : '';		
@@ -106,7 +172,17 @@ function set_protected_prefix() {
 }
 
 add_filter( 'protected_title_format', 'set_protected_prefix' );
-// TODO: add in private page prefix behavior add_filter( 'private_title_format', 'set_protected_prefix' );
+
+
+function set_private_prefix() {
+	$cpp_prefix = get_option( 'cpp_prefix_private', 'Private: ' );
+	$cpp_hide_prefix = get_option( 'cpp_hide_prefix', false );
+	$cpp_prefix = ( true == $cpp_hide_prefix ) ? '' : $cpp_prefix . ' ';
+	$cpp_prefix = ( get_post_status ( get_the_ID() ) == 'private' ) ? $cpp_prefix : '';
+
+	return __($cpp_prefix . '%s');
+}
+add_filter( 'private_title_format', 'set_private_prefix' );
 
 /**
  * Add Widget areas
@@ -139,16 +215,19 @@ add_action( 'widgets_init', 'cpp_register_widgets' );
  * Build Widgets and Customized Protected form area
  */
 
-function cpp_form() {
+function cpp_form( $output ) {
     global $post;
-    /* Create Before form area */
+
+	 /* Create Before form area */
     ob_start();
     dynamic_sidebar( 'widgetized-before-password-form' );
     $before_area = ob_get_contents();
     ob_end_clean();
-	
-	
+
 	$cpp_intro = get_option( 'cpp_text_intro', '' );
+	$cpp_label = get_option( 'cpp_label_text', '' );
+	$cpp_button_text = get_option( 'cpp_button_text', '' );
+    $label_selector = 'pwbox-'.( empty( $post->ID ) ? rand() : $post->ID );
 
 	/* Create After form area */
     ob_start();
@@ -156,14 +235,17 @@ function cpp_form() {
     $after_area = ob_get_contents();
     ob_end_clean();
 
-    $label = 'pwbox-'.( empty( $post->ID ) ? rand() : $post->ID );
-    $o = $before_area . '<form action="' . esc_url( site_url( 'wp-login.php?action=postpass', 'login_post' ) ) . '" class="post-password-form" method="post">
-    ' . $cpp_intro . '
-    <label for="' . $label . '">' . __( "Password:" ) . ' </label><input name="post_password" id="' . $label . '" type="password" size="20" maxlength="20" /><input type="submit" name="Submit" value="' . esc_attr__( "Submit" ) . '" />
+    $output = $before_area . '<form class="cpp-form" action="' . esc_attr( site_url( 'wp-login.php?action=postpass', 'login_post' ) ) . '" class="post-password-form" method="post">
+    ' . '<p>' . $cpp_intro . '</p>' . '
+    <label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" type="submit" name="Submit" value="' . esc_attr__( $cpp_button_text ) . '" />
     </form>' . $after_area ;
-    return $o;
+    return $output;
 }
-add_filter( 'the_password_form', 'cpp_form' );
+
+add_filter( 'the_password_form', 'cpp_form', 11);
+
+
+
 
 // Sanitize text
 function sanitize_text( $text ) {
