@@ -1,5 +1,5 @@
-=== Plugin Name ===
-Contributors: @kirkclarke
+=== Customize Private & Protected ===
+Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: customize, private, protect
 Requires at least: 5.8
