@@ -13,4 +13,4 @@ Use WP Customize to modify elements of password protected and private posts and 
 
 == Description ==
 
-Use this plugin to hide or edit the prefix on your password protected or private page. Use WP Customize to modify elements of your password protected and private posts and pages. These changes apply to post and pages respectively.
+Use this plugin to hide or edit the prefix on your password protected or private page, as well as add widget areas before and after the password protected form and modify label and submit button text. These changes are global and apply to all protected and private content respectively.
