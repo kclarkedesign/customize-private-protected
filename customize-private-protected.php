@@ -2,8 +2,8 @@
 /*
 Plugin Name: Customize Private & Protected
 Plugin URI: http://kirkclarke.com
-Description: Use WP Customizer to modify elements of password protected and private posts and pages.
-Version: 1.0.1
+Description: Use WP Customize to modify elements of password protected and private posts and pages.
+Version: 1.0.0
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
@@ -19,6 +19,30 @@ function cpp_register_customizer( $wp_customize ) {
 			'title' => 'Custom Password Protected',
             'priority'    => 20
 
+		) 
+	);
+
+    //  =============================
+    //  = Hide Prefix    =
+    //  =============================
+
+    $wp_customize->add_setting( 
+		'cpp_hide_prefix', 
+		array(
+			'type' 			=> 'option',
+			'capability'	=> 'manage_options',
+			'default' 		=> false,
+			'sanitize_callback' => 'wp_kses_post',
+		) 
+	);
+
+	$wp_customize->add_control( 
+		'cpp_hide_prefix', 
+		array(
+			'type'		=> 'checkbox',
+			'label' 	=> 'Hide Prefix',
+			'section' 	=> 'cpp_plugin_settings',
+			'settings'	=> 'cpp_hide_prefix'
 		) 
 	);
 
@@ -61,26 +85,6 @@ function cpp_register_customizer( $wp_customize ) {
 			'label' 	=> 'Private Title Prefix',
 			'section' 	=> 'cpp_plugin_settings',
 			'settings'	=> 'cpp_prefix_private'
-		) 
-	);
-
-	$wp_customize->add_setting( 
-		'cpp_hide_prefix', 
-		array(
-			'type' 			=> 'option',
-			'capability'	=> 'manage_options',
-			'default' 		=> false,
-			'sanitize_callback' => 'wp_kses_post',
-		) 
-	);
-
-	$wp_customize->add_control( 
-		'cpp_hide_prefix', 
-		array(
-			'type'		=> 'checkbox',
-			'label' 	=> 'Hide Prefix',
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_hide_prefix'
 		) 
 	);
 
@@ -245,7 +249,7 @@ add_filter( 'the_password_form', 'cpp_form', 11);
 
 
 function cpp_styles() {
-    wp_register_style( 'cpp-styles', 'cpp/css/style.css' );
+    wp_register_style( 'cpp-styles', plugins_url('css/style.css', __FILE__));
 	wp_enqueue_style( 'cpp-styles' );
 }
 

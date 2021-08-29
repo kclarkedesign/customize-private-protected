@@ -1,3 +1,19 @@
 .cpp-password {
+  background-color: #eee;
+  border: none;
   width: 100%;
+  border-radius: 0;
+  font-size: 14px;
+  color: #999;
+  padding: 16px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.cpp-submit {
+  border: 1px solid #ddd;
+  font-family: inherit;
+  display: block;
+  float: right;
+  margin: 8px auto 0;
+  cursor: pointer;
 }
