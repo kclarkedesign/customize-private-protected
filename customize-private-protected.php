@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Customize Private & Protected
-Plugin URI: http://kirkclarke.com
+Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
 Version: 1.0.0
 Author: Kirk Clarke
