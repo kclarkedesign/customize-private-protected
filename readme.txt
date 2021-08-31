@@ -28,7 +28,7 @@ Through wordpress admin:
 Through FTP:
 
 Download the plugin
-Unzip cpp.zip and upload the folder to the /wp-content/plugins/ directory
+Unzip customize-private-protected.zip and upload the folder to the /wp-content/plugins/ directory
 Activate the plugin through the ‘Plugins’ menu in WordPress
 
 == Frequently Asked Questions ==
