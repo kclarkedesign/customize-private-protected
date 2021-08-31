@@ -17,7 +17,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_section(
 		'cpp_plugin_settings',
 		array(
-			'title' => 'Custom Password Protected',
+			'title' => 'Custom Private & Protected',
 			'priority'    => 20
 
 		)
