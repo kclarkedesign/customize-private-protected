@@ -2,7 +2,7 @@
 Plugin Name: Customize Private & Protected
 Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
-Tags: customize, private, protected, password, prefix, page title, widget, remove
+Tags: page title, title prefix, password protected, widget, change prefix, change, customize, private, protect, password, prefix, remove
 Requires at least: 5.8
 Tested up to: 5.8
 Stable tag: 0.1.0
