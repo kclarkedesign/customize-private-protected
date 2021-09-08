@@ -48,6 +48,30 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	);
 
 	//  =============================
+	//  = Use Default Theme Form
+	//  =============================
+
+	$wp_customize->add_setting(
+		'cpp_use_default_form',
+		array(
+			'type' 			=> 'option',
+			'capability'	=> 'manage_options',
+			'default' 		=> false,
+			'sanitize_callback' => 'wp_kses_post',
+		)
+	);
+
+	$wp_customize->add_control(
+		'cpp_use_default_form',
+		array(
+			'type'		=> 'checkbox',
+			'label' 	=> 'Use Default form',
+			'section' 	=> 'cpp_plugin_settings',
+			'settings'	=> 'cpp_use_default_form'
+		)
+	);
+
+	//  =============================
 	//  = Title Prefix
 	//  =============================
 
@@ -169,8 +193,8 @@ add_action('customize_register', 'customize_pp_plugin_register_customizer');
 
 function customize_pp_plugin_set_protected_prefix()
 {
-	$cpp_prefix = get_option('cpp_prefix_protected', 'Protected: ');
 	$cpp_hide_prefix = get_option('cpp_hide_prefix', false);
+	$cpp_prefix = get_option('cpp_prefix_protected', 'Protected: ');
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = (post_password_required()) ? $cpp_prefix : '';
 
@@ -182,8 +206,8 @@ add_filter('protected_title_format', 'customize_pp_plugin_set_protected_prefix')
 
 function customize_pp_plugin_set_private_prefix()
 {
-	$cpp_prefix = get_option('cpp_prefix_private', 'Private: ');
 	$cpp_hide_prefix = get_option('cpp_hide_prefix', false);
+	$cpp_prefix = get_option('cpp_prefix_private', 'Private: ');
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = (get_post_status(get_the_ID()) == 'private') ? $cpp_prefix : '';
 
@@ -226,16 +250,21 @@ function customize_pp_plugin_form($output)
 {
 	global $post;
 
+	$cpp_use_default_form = get_option('cpp_use_default_form', false);
+
 	/* Create Before form area */
 	ob_start();
 	dynamic_sidebar('widgetized-before-password-form');
 	$before_area = ob_get_contents();
 	ob_end_clean();
 
-	$cpp_intro = get_option('cpp_text_intro', '');
-	$cpp_label = get_option('cpp_label_text', '');
-	$cpp_button_text = get_option('cpp_button_text', '');
-	$label_selector = 'pwbox-' . (empty($post->ID) ? rand() : $post->ID);
+	if (false == $cpp_use_default_form) {
+		$cpp_intro = get_option('cpp_text_intro', '');
+		$cpp_label = get_option('cpp_label_text', '');
+		$cpp_button_text = get_option('cpp_button_text', '');
+		$label_selector = 'pwbox-' . (empty($post->ID) ? rand() : $post->ID);
+	}
+	
 
 	/* Create After form area */
 	ob_start();
@@ -243,10 +272,14 @@ function customize_pp_plugin_form($output)
 	$after_area = ob_get_contents();
 	ob_end_clean();
 
-	$output = $before_area . '<p>' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
-    ' . '<label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
-    </form>' . $after_area;
-	return $output;
+	if (false == $cpp_use_default_form) {
+		$output = $before_area . '<p>' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
+		' . '<label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
+		</form>' . $after_area;
+		return $output;
+	} else {
+		return $before_area . get_the_password_form($post) . $after_area;
+	}
 }
 
 add_filter('the_password_form', 'customize_pp_plugin_form', 11);
