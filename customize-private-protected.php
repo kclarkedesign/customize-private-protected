@@ -3,7 +3,7 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 0.1.0
+Version: 0.2.0
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
@@ -43,7 +43,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'type'		=> 'checkbox',
 			'label' 	=> 'Hide Prefix',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_hide_prefix'
+			'settings'	=> 'cpp_hide_prefix',
 		)
 	);
 
@@ -67,7 +67,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'type'		=> 'checkbox',
 			'label' 	=> 'Use Default form',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_use_default_form'
+			'settings'	=> 'cpp_use_default_form',
 		)
 	);
 
@@ -90,7 +90,8 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		array(
 			'label' 	=> 'Protected Title Prefix',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_prefix_protected'
+			'settings'	=> 'cpp_prefix_protected',
+			'active_callback' => 'customize_pp_plugin_hide_prefix_condition'
 		)
 	);
 
@@ -109,7 +110,8 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		array(
 			'label' 	=> 'Private Title Prefix',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_prefix_private'
+			'settings'	=> 'cpp_prefix_private',
+			'active_callback' => 'customize_pp_plugin_hide_prefix_condition'
 		)
 	);
 
@@ -133,7 +135,8 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'type'		=> 'textarea',
 			'label' 	=> 'Protected Intro Text',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_text_intro'
+			'settings'	=> 'cpp_text_intro',
+			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
 		)
 	);
 
@@ -157,7 +160,8 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'type'		=> 'textarea',
 			'label' 	=> 'Protected Label Text',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_label_text'
+			'settings'	=> 'cpp_label_text',
+			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
 		)
 	);
 
@@ -180,12 +184,47 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		array(
 			'label' 	=> 'Protected Button Text',
 			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_button_text'
+			'settings'	=> 'cpp_button_text',
+			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
 		)
 	);
 }
 
 add_action('customize_register', 'customize_pp_plugin_register_customizer');
+
+
+
+/**
+ * Show Prefix controls only if a hide is false.
+ *
+ * @param WP_Customize_Manager object
+ * @return bool
+ */
+function customize_pp_plugin_hide_prefix_condition($control) {
+	$setting = $control->manager->get_setting('cpp_hide_prefix');
+	if(true == $setting->value()) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+/**
+ * Show form element controls only if use default form is false.
+ *
+ * @param WP_Customize_Manager object
+ * @return bool
+ */
+
+function customize_pp_plugin_hide_form_options_condition($control) {
+	$setting = $control->manager->get_setting('cpp_use_default_form');
+	if(true == $setting->value()) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
 
 /**
  * Customize Private/Protected prefix
