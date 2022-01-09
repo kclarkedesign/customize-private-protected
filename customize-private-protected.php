@@ -8,6 +8,14 @@ Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
 
+function get_filters_for( $hook = '' ) {
+    global $wp_filter;
+    if( empty( $hook ) || !isset( $wp_filter[$hook] ) )
+        return;
+
+    return $wp_filter[$hook];
+}
+
 /**
  * Add customizer options
  */
@@ -315,14 +323,20 @@ function customize_pp_plugin_form($output)
 		$output = $before_area . '<p>' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
 		' . '<label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
 		</form>' . $after_area;
-		return $output;
+	} else if (function_exists('et_password_form')) { /* if divi theme */
+		$output = $before_area . et_password_form() . $after_area;
 	} else {
-		return $before_area . get_the_password_form($post) . $after_area;
+		$output = $before_area . get_the_password_form($post) . $after_area;
 	}
+
+	//TODO: detect other themes that use 'the_password_form' hook  get_filters_for('the_password_form')
+
+	return $output;
 }
 
 add_filter('the_password_form', 'customize_pp_plugin_form', 11);
 
+ 
 /**
  * Register and enqueue plugin styles
  */
