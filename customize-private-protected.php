@@ -326,11 +326,10 @@ function customize_pp_plugin_form($output)
 	} else if (function_exists('et_password_form')) { /* if divi theme */
 		$output = $before_area . et_password_form() . $after_area;
 	} else {
-		$output = $before_area . get_the_password_form($post) . $after_area;
+		$output = $before_area . $output . $after_area;
 	}
 
 	//TODO: detect other themes that use 'the_password_form' hook  get_filters_for('the_password_form')
-
 	return $output;
 }
 

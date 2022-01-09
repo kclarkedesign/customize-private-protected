@@ -1,4 +1,4 @@
-.cpp-password {
+.cpp-form .cpp-password {
   background-color: #eee;
   border: none;
   width: 100%;
@@ -8,8 +8,10 @@
   padding: 16px;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  margin-bottom: 0.5em;
 }
-.cpp-submit {
+
+.cpp-form .cpp-submit {
   border: 1px solid #ddd;
   font-family: inherit;
   display: block;

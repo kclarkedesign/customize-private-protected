@@ -4,7 +4,7 @@ Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: page title, title prefix, password protected, widget, change prefix, change, customize, private, protect, password, prefix, remove
 Requires at least: 5.8
-Tested up to: 5.8
+Tested up to: 5.8.3
 Stable tag: 0.2.0
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -46,3 +46,13 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 == Donations ==
 
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
+
+== Changelog ==
+
+= 0.2.0 - 01-09-2022 =
+- Enchancement - Made fields hide/show based on hide Prefix & Use Default checkboxes
+- Enchancement - Added support for Divi password form
+- Feature - Added option to display Wordpress' default form with widgets
+
+= 0.1.0 - 08-31-2021 =
+- Iniital Release
