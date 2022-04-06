@@ -4,8 +4,8 @@ Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: page title, title prefix, password protected, widget, change prefix, change, customize, private, protect, password, prefix, remove
 Requires at least: 5.8
-Tested up to: 5.9
-Stable tag: 0.2.0
+Tested up to: 5.9.3
+Stable tag: 1.0.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -48,6 +48,9 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.0.0 - 04-06-2022 =
+- Tested - Passed test with WordPress version 5.9.3
 
 = 0.2.0 - 01-09-2022 =
 - Enchancement - Made fields hide/show based on hide Prefix & Use Default checkboxes
