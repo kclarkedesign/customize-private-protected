@@ -51,6 +51,7 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 
 = 1.0.0 - 04-06-2022 =
 - Tested - Passed test with WordPress version 5.9.3
+- Enchancement - Updated default values for button and label
 
 = 0.2.0 - 01-09-2022 =
 - Enchancement - Made fields hide/show based on hide Prefix & Use Default checkboxes

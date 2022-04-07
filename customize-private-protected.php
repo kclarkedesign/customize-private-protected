@@ -182,7 +182,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		array(
 			'type' 				=> 'option',
 			'capability'		=> 'manage_options',
-			'default' 			=> 'Submit',
+			'default' 			=> 'Enter',
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -307,8 +307,8 @@ function customize_pp_plugin_form($output)
 
 	if (false == $cpp_use_default_form) {
 		$cpp_intro = get_option('cpp_text_intro', '');
-		$cpp_label = get_option('cpp_label_text', '');
-		$cpp_button_text = get_option('cpp_button_text', '');
+		$cpp_label = get_option('cpp_label_text', 'Password: ');
+		$cpp_button_text = get_option('cpp_button_text', 'Enter');
 		$label_selector = 'pwbox-' . (empty($post->ID) ? rand() : $post->ID);
 	}
 	
