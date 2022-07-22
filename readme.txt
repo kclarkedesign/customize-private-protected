@@ -4,7 +4,7 @@ Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: page title, title prefix, password protected, widget, change prefix, change, customize, private, protect, password, prefix, remove
 Requires at least: 5.8
-Tested up to: 6.0
+Tested up to: 6.0.1
 Stable tag: 1.0.0
 Requires PHP: 7.0
 License: GPLv2 or later
@@ -48,6 +48,9 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.0.0 - 07-21-2022 =
+- Tested - Passed test with WordPress version 6.0.1
 
 = 1.0.0 - 05-25-2022 =
 - Tested - Passed test with WordPress version 6.0
