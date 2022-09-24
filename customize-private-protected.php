@@ -200,7 +200,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 
 add_action('customize_register', 'customize_pp_plugin_register_customizer');
 
-
+/** TODO: Add ability to customize button style and/or additonal button styles */
 
 /**
  * Show Prefix controls only if a hide is false.
