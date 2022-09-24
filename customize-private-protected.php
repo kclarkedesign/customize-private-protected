@@ -335,6 +335,25 @@ function customize_pp_plugin_form($output)
 
 add_filter('the_password_form', 'customize_pp_plugin_form', 11);
 
+
+/**
+ * Handle Admin notice for requesting a review
+ */
+
+function customize_pp_plugin_admin_review_notice(){
+    global $pagenow;
+		if ( $pagenow == 'index.php' || $pagenow == 'edit.php' ) {
+		$user = wp_get_current_user();
+		if ( in_array( 'Administrator', (array) $user->roles ) || in_array( 'Super Administrator', (array) $user->roles ) ) {
+		echo '<div class="notice notice-info is-dismissible">
+			  <p>Find Customize Private & Protected helpful? give it a 5-star rating on WordPress</p>
+			  <p><a href="https://wordpress.org/support/plugin/customize-private-protected/reviews/#new-post" class="" target="_blank" rel="noopener noreferrer">Sure, you deserve it!</a>
+			 </div>';
+		}
+	}
+}
+add_action('admin_notices', 'customize_pp_plugin_admin_review_notice');
+
  
 /**
  * Register and enqueue plugin styles
