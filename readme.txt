@@ -49,9 +49,15 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 
 == Changelog ==
 
+= 1.1.0 - 01-14-2023 =
+- Tested - Passed test with WordPress version 6.1.1
+- Feature - Added ability to customize protected button appearance
+- Enhancement - Enabled translation in plugin labels
+- Enhancement - Minor cleanup
+
 = 1.0.1 - 09-24-2022 =
 - Tested - Passed test with WordPress version 6.0.2
-- Enchancement - Added dismissible notice for plugin review
+- Enhancement - Added dismissible notice for plugin review
 
 = 1.0.0 - 07-21-2022 =
 - Tested - Passed test with WordPress version 6.0.1
@@ -61,11 +67,11 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 
 = 1.0.0 - 04-06-2022 =
 - Tested - Passed test with WordPress version 5.9.3
-- Enchancement - Updated default values for button and label
+- Enhancement - Updated default values for button and label
 
 = 0.2.0 - 01-09-2022 =
-- Enchancement - Made fields hide/show based on hide Prefix & Use Default checkboxes
-- Enchancement - Added support for Divi password form
+- Enhancement - Made fields hide/show based on hide Prefix & Use Default checkboxes
+- Enhancement - Added support for Divi password form
 - Feature - Added option to display Wordpress' default form with widgets
 
 = 0.1.0 - 08-31-2021 =
