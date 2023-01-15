@@ -22,10 +22,42 @@ function get_filters_for( $hook = '' ) {
 function customize_pp_plugin_register_customizer($wp_customize)
 {
 
+	
+	class WP_Customize_Input_PX_Append_Control extends WP_Customize_Control {
+		public $type = 'text_input_px_append';
+
+		public function enqueue() {
+			wp_enqueue_style( 'cpp_custom_controls_css', plugins_url('css/custom-controls.css', __FILE__));
+		}
+		/**
+		 * Render the control's content.
+		*/
+		public function render_content() { ?>
+<?php if ( ! empty( $this->label ) ) : ?>
+<label for="<?php echo esc_attr( $input_id ); ?>"
+    class="customize-control-title"><?php echo esc_html( $this->label ); ?></label>
+<?php endif; ?>
+<?php if ( ! empty( $this->description ) ) : ?>
+<span id="<?php echo esc_attr( $description_id ); ?>"
+    class="description customize-control-description"><?php echo $this->description; ?></span>
+<?php endif; ?>
+<div class="cpp-customize-control input-group">
+    <input id="<?php echo esc_attr( $input_id ); ?>" class="form-control" type="<?php echo esc_attr( $this->type ); ?>"
+        <?php echo $describedby_attr; ?> <?php $this->input_attrs(); ?>
+        <?php if ( ! isset( $this->input_attrs['value'] ) ) : ?> value="<?php echo esc_attr( $this->value() ); ?>"
+        <?php endif; ?> <?php $this->link(); ?> />
+    <div class="input-group-append">
+        <span class="input-group-text">px</span>
+    </div>
+</div>
+<?php }
+	}
+
+
 	$wp_customize->add_section(
 		'cpp_plugin_settings',
 		array(
-			'title' => __('Custom Private & Protected'),
+			'title' => __('Customize Private & Protected'),
 			'priority'    => 20
 
 		)
@@ -201,24 +233,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	//  = Protected Button Appearance Panel
 	//  =============================
 
-	// $wp_customize->add_panel(
-	// 	'cpp_button_panel', 
-	// 	array(
-	// 		'priority'       => 10,
-	// 		'capability'     => 'manage_options',
-	// 		'title'          => __('Button Appearance'),
-	// 		'description'    => __('Customize protected button'),
-	// 	) 
-	// );
-
-	// $wp_customize->add_section(
-	// 	'cpp_button_section',
-	// 	array(
-	// 		'title' =>  __('Button Appearance'),
-	// 		'priority'    => 20,
-	// 		'panel'  => 'cpp_button_panel',
-	// 	)
-	// );
+	/** TODO: Add ability to customize button style and/or additonal button styles */
 
 	$wp_customize->add_setting(
 		'cpp_button_x_padding',
@@ -231,17 +246,20 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		'cpp_button__x_padding',
-		array(
-			'label' => __( 'Protected Button Horizontal Padding' ),
-			'description' => __('Controls padding inside the button to the left and right of the button text in pixels (px)'),
-			'type' => 'number',
-			'settings'	=> 'cpp_button_x_padding',
-			'section' => 'cpp_plugin_settings',
-			'input_attrs' => array(
-				'min' => 0,
-			),
-			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
+		new WP_Customize_Input_PX_Append_Control(
+			$wp_customize,
+			'cpp_button__x_padding',
+			array(
+				'label' => __( 'Protected Button Horizontal Padding' ),
+				'description' => __('Controls padding inside the button to the left and right of the button text in pixels (px)'),
+				'type' => 'number',
+				'settings'	=> 'cpp_button_x_padding',
+				'section' => 'cpp_plugin_settings',
+				'input_attrs' => array(
+					'min' => 0,
+				),
+				'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
+			)
 		)
 	);
 
@@ -256,24 +274,27 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	);
 
 	$wp_customize->add_control(
-		'cpp_button_y_padding',
-		array(
-			'label' => __( 'Protected Button Vertical Padding' ),
-			'description' => __('Controls padding inside the button above and below the button text in pixels (px)'),
-			'type' => 'number',
-			'settings'	=> 'cpp_button_y_padding',
-			'section' => 'cpp_plugin_settings',
-			'input_attrs' => array(
-				'min' => 0,
-			),
-			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
+		new WP_Customize_Input_PX_Append_Control(
+			$wp_customize,
+			'cpp_button_y_padding',
+			array(
+				'label' => __( 'Protected Button Vertical Padding' ),
+				'description' => __('Controls padding inside the button above and below the button text in pixels (px)'),
+				'type' => 'number',
+				'settings'	=> 'cpp_button_y_padding',
+				'section' => 'cpp_plugin_settings',
+				'input_attrs' => array(
+					'min' => 0,
+				),
+				'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
+			)
 		)
 	);
 }
 
 add_action('customize_register', 'customize_pp_plugin_register_customizer');
 
-/** TODO: Add ability to customize button style and/or additonal button styles */
+
 
 /**
  * Show Prefix controls only if a hide is false.
