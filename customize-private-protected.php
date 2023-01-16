@@ -3,7 +3,7 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.0.1
+Version: 1.1.0
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
@@ -240,7 +240,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		array(
 			'type' 			=> 'option',
 			'capability'	=> 'manage_options',
-			'default' 		=> 6,
+			'default' 		=> 20,
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -251,7 +251,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'cpp_button__x_padding',
 			array(
 				'label' => __( 'Protected Button Horizontal Padding' ),
-				'description' => __('Controls padding inside the button to the left and right of the button text in pixels (px)'),
+				'description' => __('Controls padding inside the button to the left and right of the button text in pixels (px). Leave blank for default'),
 				'type' => 'number',
 				'settings'	=> 'cpp_button_x_padding',
 				'section' => 'cpp_plugin_settings',
@@ -268,7 +268,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		array(
 			'type' 			=> 'option',
 			'capability'	=> 'manage_options',
-			'default' 		=> 1,
+			'default' 		=> 10,
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -279,7 +279,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'cpp_button_y_padding',
 			array(
 				'label' => __( 'Protected Button Vertical Padding' ),
-				'description' => __('Controls padding inside the button above and below the button text in pixels (px)'),
+				'description' => __('Controls padding inside the button above and below the button text in pixels (px). Leave blank for default'),
 				'type' => 'number',
 				'settings'	=> 'cpp_button_y_padding',
 				'section' => 'cpp_plugin_settings',
@@ -403,7 +403,11 @@ function customize_pp_plugin_form($output)
 		$cpp_intro = get_option('cpp_text_intro', '');
 		$cpp_label = get_option('cpp_label_text', 'Password: ');
 		$cpp_button_text = get_option('cpp_button_text', 'Enter');
-		$cpp_button_padding = 'padding: ' . get_option('cpp_button_y_padding', '1') .'px '. get_option('cpp_button_x_padding', '6') . 'px;';
+
+		$y_padding = ('' == get_option('cpp_button_y_padding')) ? '' : get_option('cpp_button_y_padding') . 'px ';
+		$x_padding = ('' == get_option('cpp_button_x_padding')) ? '' : get_option('cpp_button_x_padding') . 'px;';
+		$cpp_button_padding = ('' == $y_padding && '' == $x_padding) ? '' : 'padding: '. $y_padding . $x_padding .'';
+		
 		$label_selector = 'pwbox-' . (empty($post->ID) ? rand() : $post->ID);
 	}
 	
@@ -416,7 +420,7 @@ function customize_pp_plugin_form($output)
 
 	if (false == $cpp_use_default_form) {
 		$output = $before_area . '<p>' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
-		' . '<label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="' . esc_attr__($cpp_button_padding) . '" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
+		' . '<label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="'. esc_attr__($cpp_button_padding) .'" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
 		</form>' . $after_area;
 	} else if (function_exists('et_password_form')) { /* if divi theme */
 		$output = $before_area . et_password_form() . $after_area;

@@ -4,8 +4,8 @@ Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: page title, title prefix, password protected, widget, change prefix, change, customize, private, protect, password, prefix, remove
 Requires at least: 5.8
-Tested up to: 6.0.2
-Stable tag: 1.0.1
+Tested up to: 6.1.1
+Stable tag: 1.1.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -49,7 +49,7 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 
 == Changelog ==
 
-= 1.1.0 - 01-14-2023 =
+= 1.1.0 - 01-16-2023 =
 - Tested - Passed test with WordPress version 6.1.1
 - Feature - Added ability to customize protected button appearance
 - Enhancement - Enabled translation in plugin labels
