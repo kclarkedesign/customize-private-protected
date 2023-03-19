@@ -3,17 +3,18 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.1.0
+Version: 1.1.1
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
 
-function get_filters_for( $hook = '' ) {
-    global $wp_filter;
-    if( empty( $hook ) || !isset( $wp_filter[$hook] ) )
-        return;
+function get_filters_for($hook = '')
+{
+	global $wp_filter;
+	if (empty($hook) || !isset($wp_filter[$hook]))
+		return;
 
-    return $wp_filter[$hook];
+	return $wp_filter[$hook];
 }
 
 /**
@@ -22,35 +23,40 @@ function get_filters_for( $hook = '' ) {
 function customize_pp_plugin_register_customizer($wp_customize)
 {
 
-	
-	class WP_Customize_Input_PX_Append_Control extends WP_Customize_Control {
+
+	class WP_Customize_Input_PX_Append_Control extends WP_Customize_Control
+	{
 		public $type = 'text_input_px_append';
 
-		public function enqueue() {
-			wp_enqueue_style( 'cpp_custom_controls_css', plugins_url('css/custom-controls.css', __FILE__));
+		public function enqueue()
+		{
+			wp_enqueue_style('cpp_custom_controls_css', plugins_url('css/custom-controls.css', __FILE__));
 		}
 		/**
 		 * Render the control's content.
-		*/
-		public function render_content() { ?>
-<?php if ( ! empty( $this->label ) ) : ?>
-<label for="<?php echo esc_attr( $input_id ); ?>"
-    class="customize-control-title"><?php echo esc_html( $this->label ); ?></label>
-<?php endif; ?>
-<?php if ( ! empty( $this->description ) ) : ?>
-<span id="<?php echo esc_attr( $description_id ); ?>"
-    class="description customize-control-description"><?php echo $this->description; ?></span>
-<?php endif; ?>
-<div class="cpp-customize-control input-group">
-    <input id="<?php echo esc_attr( $input_id ); ?>" class="form-control" type="<?php echo esc_attr( $this->type ); ?>"
-        <?php echo $describedby_attr; ?> <?php $this->input_attrs(); ?>
-        <?php if ( ! isset( $this->input_attrs['value'] ) ) : ?> value="<?php echo esc_attr( $this->value() ); ?>"
-        <?php endif; ?> <?php $this->link(); ?> />
-    <div class="input-group-append">
-        <span class="input-group-text">px</span>
-    </div>
-</div>
-<?php }
+		 */
+		public function render_content()
+		{
+			$id = $this->id;
+
+			$input_id = '_customize-input-cpp_' . $id;
+			$description_id = $input_id . '_description';
+			$describedby_attr = $description_id;
+			?>
+			<?php if (!empty($this->label)): ?>
+				<label for="<?php echo esc_attr($input_id); ?>" class="customize-control-title"><?php echo esc_html($this->label); ?></label>
+			<?php endif; ?>
+			<?php if (!empty($this->description)): ?>
+				<span id="<?php echo esc_attr($description_id); ?>" class="description customize-control-description"><?php echo $this->description; ?></span>
+			<?php endif; ?>
+			<div class="cpp-customize-control input-group">
+				<input id="<?php echo esc_attr($input_id); ?>" class="form-control" type="<?php echo esc_attr($this->type); ?>"
+					<?php echo $describedby_attr; ?> 			<?php $this->input_attrs(); ?> 			<?php if (!isset($this->input_attrs['value'])): ?> value="<?php echo esc_attr($this->value()); ?>" <?php endif; ?> 			<?php $this->link(); ?> />
+				<div class="input-group-append">
+					<span class="input-group-text">px</span>
+				</div>
+			</div>
+		<?php }
 	}
 
 
@@ -58,7 +64,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		'cpp_plugin_settings',
 		array(
 			'title' => __('Customize Private & Protected'),
-			'priority'    => 20
+			'priority' => 20
 
 		)
 	);
@@ -70,9 +76,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_hide_prefix',
 		array(
-			'type' 			=> 'option',
-			'capability'	=> 'manage_options',
-			'default' 		=> false,
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => false,
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -80,10 +86,10 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_hide_prefix',
 		array(
-			'type'		=> 'checkbox',
-			'label' 	=> __('Hide Prefix'),
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_hide_prefix',
+			'type' => 'checkbox',
+			'label' => __('Hide Prefix'),
+			'section' => 'cpp_plugin_settings',
+			'settings' => 'cpp_hide_prefix',
 		)
 	);
 
@@ -94,9 +100,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_use_default_form',
 		array(
-			'type' 			=> 'option',
-			'capability'	=> 'manage_options',
-			'default' 		=> false,
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => false,
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -104,10 +110,10 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_use_default_form',
 		array(
-			'type'		=> 'checkbox',
-			'label' 	=> __('Use Default form'),
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_use_default_form',
+			'type' => 'checkbox',
+			'label' => __('Use Default form'),
+			'section' => 'cpp_plugin_settings',
+			'settings' => 'cpp_use_default_form',
 		)
 	);
 
@@ -118,9 +124,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_prefix_private',
 		array(
-			'type' 			=> 'option',
-			'capability'	=> 'manage_options',
-			'default' 		=> 'Private: ',
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => 'Private: ',
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -128,9 +134,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_prefix_private',
 		array(
-			'label' 	=> __('Private Title Prefix'),
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_prefix_private',
+			'label' => __('Private Title Prefix'),
+			'section' => 'cpp_plugin_settings',
+			'settings' => 'cpp_prefix_private',
 			'active_callback' => 'customize_pp_plugin_hide_prefix_condition'
 		)
 	);
@@ -138,9 +144,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_prefix_protected',
 		array(
-			'type' 			=> 'option',
-			'capability'	=> 'manage_options',
-			'default' 		=> 'Protected: ',
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => 'Protected: ',
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -148,9 +154,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_prefix_protected',
 		array(
-			'label' 	=> __('Protected Title Prefix'),
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_prefix_protected',
+			'label' => __('Protected Title Prefix'),
+			'section' => 'cpp_plugin_settings',
+			'settings' => 'cpp_prefix_protected',
 			'active_callback' => 'customize_pp_plugin_hide_prefix_condition'
 		)
 	);
@@ -162,9 +168,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_text_intro',
 		array(
-			'type' 				=> 'option',
-			'capability'		=> 'manage_options',
-			'default' 			=> 'To view this protected content, enter the password below:',
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => 'To view this protected content, enter the password below:',
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -172,10 +178,10 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_text_intro',
 		array(
-			'type'		=> 'textarea',
-			'label' 	=> __('Protected Intro Text'),
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_text_intro',
+			'type' => 'textarea',
+			'label' => __('Protected Intro Text'),
+			'section' => 'cpp_plugin_settings',
+			'settings' => 'cpp_text_intro',
 			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
 		)
 	);
@@ -187,9 +193,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_label_text',
 		array(
-			'type' 				=> 'option',
-			'capability'		=> 'manage_options',
-			'default' 			=> 'Password: ',
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => 'Password: ',
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -197,10 +203,10 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_label_text',
 		array(
-			'type'		=> 'textarea',
-			'label' 	=> __('Protected Label Text'),
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_label_text',
+			'type' => 'textarea',
+			'label' => __('Protected Label Text'),
+			'section' => 'cpp_plugin_settings',
+			'settings' => 'cpp_label_text',
 			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
 		)
 	);
@@ -212,9 +218,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_button_text',
 		array(
-			'type' 				=> 'option',
-			'capability'		=> 'manage_options',
-			'default' 			=> 'Enter',
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => 'Enter',
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -222,9 +228,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_button_text',
 		array(
-			'label' 	=> __('Protected Button Text'),
-			'section' 	=> 'cpp_plugin_settings',
-			'settings'	=> 'cpp_button_text',
+			'label' => __('Protected Button Text'),
+			'section' => 'cpp_plugin_settings',
+			'settings' => 'cpp_button_text',
 			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
 		)
 	);
@@ -238,9 +244,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_button_x_padding',
 		array(
-			'type' 			=> 'option',
-			'capability'	=> 'manage_options',
-			'default' 		=> 20,
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => 20,
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -250,10 +256,10 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			$wp_customize,
 			'cpp_button__x_padding',
 			array(
-				'label' => __( 'Protected Button Horizontal Padding' ),
+				'label' => __('Protected Button Horizontal Padding'),
 				'description' => __('Controls padding inside the button to the left and right of the button text in pixels (px). Leave blank for default'),
 				'type' => 'number',
-				'settings'	=> 'cpp_button_x_padding',
+				'settings' => 'cpp_button_x_padding',
 				'section' => 'cpp_plugin_settings',
 				'input_attrs' => array(
 					'min' => 0,
@@ -266,9 +272,9 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_setting(
 		'cpp_button_y_padding',
 		array(
-			'type' 			=> 'option',
-			'capability'	=> 'manage_options',
-			'default' 		=> 10,
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => 10,
 			'sanitize_callback' => 'wp_kses_post',
 		)
 	);
@@ -278,10 +284,10 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			$wp_customize,
 			'cpp_button_y_padding',
 			array(
-				'label' => __( 'Protected Button Vertical Padding' ),
+				'label' => __('Protected Button Vertical Padding'),
 				'description' => __('Controls padding inside the button above and below the button text in pixels (px). Leave blank for default'),
 				'type' => 'number',
-				'settings'	=> 'cpp_button_y_padding',
+				'settings' => 'cpp_button_y_padding',
 				'section' => 'cpp_plugin_settings',
 				'input_attrs' => array(
 					'min' => 0,
@@ -302,9 +308,10 @@ add_action('customize_register', 'customize_pp_plugin_register_customizer');
  * @param WP_Customize_Manager object
  * @return bool
  */
-function customize_pp_plugin_hide_prefix_condition($control) {
+function customize_pp_plugin_hide_prefix_condition($control)
+{
 	$setting = $control->manager->get_setting('cpp_hide_prefix');
-	if(true == $setting->value()) {
+	if (true == $setting->value()) {
 		return false;
 	} else {
 		return true;
@@ -318,9 +325,10 @@ function customize_pp_plugin_hide_prefix_condition($control) {
  * @return bool
  */
 
-function customize_pp_plugin_hide_form_options_condition($control) {
+function customize_pp_plugin_hide_form_options_condition($control)
+{
 	$setting = $control->manager->get_setting('cpp_use_default_form');
-	if(true == $setting->value()) {
+	if (true == $setting->value()) {
 		return false;
 	} else {
 		return true;
@@ -362,23 +370,27 @@ add_filter('private_title_format', 'customize_pp_plugin_set_private_prefix');
 function customize_pp_plugin_register_widgets()
 {
 
-	register_sidebar(array(
-		'name' => __('Widgetized Before Password Form', 'cpp'),
-		'id' => 'widgetized-before-password-form',
-		'before_widget' => '<div id="%1$s" class="widget %2$s">',
-		'after_widget' => '</div>',
-		'before_title' => '<h3 class="widgettitle">',
-		'after_title' => '</h3>'
-	));
+	register_sidebar(
+		array(
+			'name' => __('Widgetized Before Password Form', 'cpp'),
+			'id' => 'widgetized-before-password-form',
+			'before_widget' => '<div id="%1$s" class="widget %2$s">',
+			'after_widget' => '</div>',
+			'before_title' => '<h3 class="widgettitle">',
+			'after_title' => '</h3>'
+		)
+	);
 
-	register_sidebar(array(
-		'name' => __('Widgetized After Password Form', 'cpp'),
-		'id' => 'widgetized-after-password-form',
-		'before_widget' => '<div id="%1$s" class="widget %2$s">',
-		'after_widget' => '</div>',
-		'before_title' => '<h3 class="widgettitle">',
-		'after_title' => '</h3>'
-	));
+	register_sidebar(
+		array(
+			'name' => __('Widgetized After Password Form', 'cpp'),
+			'id' => 'widgetized-after-password-form',
+			'before_widget' => '<div id="%1$s" class="widget %2$s">',
+			'after_widget' => '</div>',
+			'before_title' => '<h3 class="widgettitle">',
+			'after_title' => '</h3>'
+		)
+	);
 }
 
 add_action('widgets_init', 'customize_pp_plugin_register_widgets');
@@ -406,11 +418,11 @@ function customize_pp_plugin_form($output)
 
 		$y_padding = ('' == get_option('cpp_button_y_padding')) ? '' : get_option('cpp_button_y_padding') . 'px ';
 		$x_padding = ('' == get_option('cpp_button_x_padding')) ? '' : get_option('cpp_button_x_padding') . 'px;';
-		$cpp_button_padding = ('' == $y_padding && '' == $x_padding) ? '' : 'padding: '. $y_padding . $x_padding .'';
-		
+		$cpp_button_padding = ('' == $y_padding && '' == $x_padding) ? '' : 'padding: ' . $y_padding . $x_padding . '';
+
 		$label_selector = 'pwbox-' . (empty($post->ID) ? rand() : $post->ID);
 	}
-	
+
 
 	/* Create After form area */
 	ob_start();
@@ -420,7 +432,7 @@ function customize_pp_plugin_form($output)
 
 	if (false == $cpp_use_default_form) {
 		$output = $before_area . '<p>' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
-		' . '<label class="cpp-label" for="' .  esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="'. esc_attr__($cpp_button_padding) .'" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
+		' . '<label class="cpp-label" for="' . esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="' . esc_attr__($cpp_button_padding) . '" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
 		</form>' . $after_area;
 	} else if (function_exists('et_password_form')) { /* if divi theme */
 		$output = $before_area . et_password_form() . $after_area;
@@ -439,12 +451,13 @@ add_filter('the_password_form', 'customize_pp_plugin_form', 11);
  * Handle Admin notice for requesting a review
  */
 
-function customize_pp_plugin_admin_review_notice(){
-    global $pagenow;
-		if ( $pagenow == 'index.php' || $pagenow == 'edit.php' ) {
+function customize_pp_plugin_admin_review_notice()
+{
+	global $pagenow;
+	if ($pagenow == 'index.php' || $pagenow == 'edit.php') {
 		$user = wp_get_current_user();
-		if ( in_array( 'Administrator', (array) $user->roles ) || in_array( 'Super Administrator', (array) $user->roles ) ) {
-		echo '<div class="notice notice-info is-dismissible">
+		if (in_array('Administrator', (array) $user->roles) || in_array('Super Administrator', (array) $user->roles)) {
+			echo '<div class="notice notice-info is-dismissible">
 			  <p>Find Customize Private & Protected helpful? Give it a 5-star rating on WordPress</p>
 			  <p><a href="https://wordpress.org/support/plugin/customize-private-protected/reviews/#new-post" class="" target="_blank" rel="noopener noreferrer">Sure, you deserve it!</a>
 			 </div>';
@@ -453,7 +466,7 @@ function customize_pp_plugin_admin_review_notice(){
 }
 add_action('admin_notices', 'customize_pp_plugin_admin_review_notice');
 
- 
+
 /**
  * Register and enqueue plugin styles
  */
