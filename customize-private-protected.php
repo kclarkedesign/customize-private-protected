@@ -3,7 +3,7 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.1.1
+Version: 1.2.0
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
@@ -23,6 +23,7 @@ function get_filters_for($hook = '')
 function customize_pp_plugin_register_customizer($wp_customize)
 {
 
+	$transport = ($wp_customize->selective_refresh ? 'postMessage' : 'refresh');
 
 	class WP_Customize_Input_PX_Append_Control extends WP_Customize_Control
 	{
@@ -80,6 +81,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'capability' => 'manage_options',
 			'default' => false,
 			'sanitize_callback' => 'wp_kses_post',
+			'transport' => $transport
 		)
 	);
 
@@ -92,6 +94,42 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'settings' => 'cpp_hide_prefix',
 		)
 	);
+
+	if (isset($wp_customize->selective_refresh)) {
+		$wp_customize->selective_refresh->add_partial(
+			'cpp_hide_prefix',
+			array(
+				'selector' => '.header-post-title-class',
+				'container_inclusive' => false,
+				'settings' => 'cpp_hide_prefix',
+				'render_callback' => function () {
+					$cpp_hide_prefix = get_option('cpp_hide_prefix', false);
+					$page_prefix_capable = (post_password_required() || get_post_status(get_the_ID()) == 'private');
+
+					if ($page_prefix_capable) {
+						$title_format = '';
+						$cpp_prefix = '';
+						if (post_password_required()) { // page is protected
+							$title_format = 'protected_title_format';
+							$cpp_prefix = get_option('cpp_prefix_protected', 'Protected: ');
+							$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
+
+						} elseif (get_post_status(get_the_ID()) == 'private') { // page is private
+							$title_format = 'private_title_format';
+							$cpp_prefix = get_option('cpp_prefix_private', 'Private: ');
+							$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
+						}
+
+						add_filter($title_format, function () use ($cpp_prefix) {
+							return __($cpp_prefix . '%s');
+						});
+					}
+
+					return get_the_title();
+				},
+			)
+		);
+	}
 
 	//  =============================
 	//  = Use Default Theme Form
@@ -351,7 +389,6 @@ function customize_pp_plugin_set_protected_prefix()
 }
 
 add_filter('protected_title_format', 'customize_pp_plugin_set_protected_prefix');
-
 
 function customize_pp_plugin_set_private_prefix()
 {
