@@ -3,7 +3,7 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.2.0
+Version: 1.3.0
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
@@ -64,7 +64,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_section(
 		'cpp_plugin_settings',
 		array(
-			'title' => __('Customize Private & Protected'),
+			'title' => __('Customize Private & Protected', 'customize-private-protected'),
 			'priority' => 20
 
 		)
@@ -81,7 +81,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'capability' => 'manage_options',
 			'default' => false,
 			'sanitize_callback' => 'wp_kses_post',
-			'transport' => $transport
+			// 'transport' => $transport
 		)
 	);
 
@@ -89,47 +89,49 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		'cpp_hide_prefix',
 		array(
 			'type' => 'checkbox',
-			'label' => __('Hide Prefix'),
+			'label' => __('Hide Prefix', 'customize-private-protected'),
 			'section' => 'cpp_plugin_settings',
 			'settings' => 'cpp_hide_prefix',
 		)
 	);
 
-	if (isset($wp_customize->selective_refresh)) {
-		$wp_customize->selective_refresh->add_partial(
-			'cpp_hide_prefix',
-			array(
-				'selector' => '.header-post-title-class',
-				'container_inclusive' => false,
-				'settings' => 'cpp_hide_prefix',
-				'render_callback' => function () {
-					$cpp_hide_prefix = get_option('cpp_hide_prefix', false);
-					$page_prefix_capable = (post_password_required() || get_post_status(get_the_ID()) == 'private');
+	// if (isset($wp_customize->selective_refresh)) {
+	// 	$wp_customize->selective_refresh->add_partial(
+	// 		'cpp_hide_prefix',
+	// 		array(
+	// 			'selector' => 'body > h1',
+	// 			'container_inclusive' => false,
+	// 			'settings' => 'cpp_hide_prefix',
+	// 			'render_callback' => function () {
+	// 				$cpp_hide_prefix = get_option('cpp_hide_prefix', false);
+	// 				$page_prefix_capable = (post_password_required() || get_post_status(get_the_ID()) == 'private');
 
-					if ($page_prefix_capable) {
-						$title_format = '';
-						$cpp_prefix = '';
-						if (post_password_required()) { // page is protected
-							$title_format = 'protected_title_format';
-							$cpp_prefix = get_option('cpp_prefix_protected', 'Protected: ');
-							$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
+	// 				if ($page_prefix_capable) {
+	// 					$title_format = '';
+	// 					$cpp_prefix = '';
+	// 					if (post_password_required()) { // page is protected
+	// 						$title_format = 'protected_title_format';
+	// 						$cpp_prefix = get_option('cpp_prefix_protected', 'Protected: ');
+	// 						$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 
-						} elseif (get_post_status(get_the_ID()) == 'private') { // page is private
-							$title_format = 'private_title_format';
-							$cpp_prefix = get_option('cpp_prefix_private', 'Private: ');
-							$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
-						}
+	// 					} elseif (get_post_status(get_the_ID()) == 'private') { // page is private
+	// 						$title_format = 'private_title_format';
+	// 						$cpp_prefix = get_option('cpp_prefix_private', 'Private: ');
+	// 						$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
+	// 					}
 
-						add_filter($title_format, function () use ($cpp_prefix) {
-							return __($cpp_prefix . '%s');
-						});
-					}
+	// 					add_filter($title_format, function () use ($cpp_prefix) {
+	// 						return __($cpp_prefix . '%s');
+	// 					});
 
-					return get_the_title();
-				},
-			)
-		);
-	}
+
+	// 				}
+
+	// 				return get_the_title();
+	// 			},
+	// 		)
+	// 	);
+	// }
 
 	//  =============================
 	//  = Use Default Theme Form
@@ -149,7 +151,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		'cpp_use_default_form',
 		array(
 			'type' => 'checkbox',
-			'label' => __('Use Default form'),
+			'label' => __('Use Default form', 'customize-private-protected'),
 			'section' => 'cpp_plugin_settings',
 			'settings' => 'cpp_use_default_form',
 		)
@@ -166,18 +168,33 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'capability' => 'manage_options',
 			'default' => 'Private: ',
 			'sanitize_callback' => 'wp_kses_post',
+			'transport' => $transport,
 		)
 	);
 
 	$wp_customize->add_control(
 		'cpp_prefix_private',
 		array(
-			'label' => __('Private Title Prefix'),
+			'label' => __('Private Title Prefix', 'customize-private-protected'),
 			'section' => 'cpp_plugin_settings',
 			'settings' => 'cpp_prefix_private',
 			'active_callback' => 'customize_pp_plugin_hide_prefix_condition'
 		)
 	);
+
+	if (isset($wp_customize->selective_refresh)) {
+		$wp_customize->selective_refresh->add_partial(
+			'cpp_prefix_private',
+			array(
+				'selector' => 'body > h1',
+				'container_inclusive' => false,
+				'settings' => 'cpp_prefix_private',
+				'render_callback' => function () {
+					get_the_title();
+				}
+			)
+		);
+	}
 
 	$wp_customize->add_setting(
 		'cpp_prefix_protected',
@@ -186,18 +203,32 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'capability' => 'manage_options',
 			'default' => 'Protected: ',
 			'sanitize_callback' => 'wp_kses_post',
+			'transport' => $transport,
 		)
 	);
 
 	$wp_customize->add_control(
 		'cpp_prefix_protected',
 		array(
-			'label' => __('Protected Title Prefix'),
+			'label' => __('Protected Title Prefix', 'customize-private-protected'),
 			'section' => 'cpp_plugin_settings',
 			'settings' => 'cpp_prefix_protected',
-			'active_callback' => 'customize_pp_plugin_hide_prefix_condition'
+			'active_callback' => 'customize_pp_plugin_hide_prefix_condition',
+			'type' => 'text',
 		)
 	);
+
+	if (isset($wp_customize->selective_refresh)) {
+		$wp_customize->selective_refresh->add_partial(
+			'cpp_prefix_protected',
+			array(
+				'selector' => 'body > h1',
+				'container_inclusive' => false,
+				'settings' => 'cpp_prefix_protected',
+				'render_callback' => 'customize_pp_plugin_set_protected_prefix'
+			)
+		);
+	}
 
 	//  =============================
 	//  = Intro Text
@@ -210,6 +241,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			'capability' => 'manage_options',
 			'default' => 'To view this protected content, enter the password below:',
 			'sanitize_callback' => 'wp_kses_post',
+			'transport' => $transport,
 		)
 	);
 
@@ -217,12 +249,25 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		'cpp_text_intro',
 		array(
 			'type' => 'textarea',
-			'label' => __('Protected Intro Text'),
+			'label' => __('Protected Intro Text', 'customize-private-protected'),
 			'section' => 'cpp_plugin_settings',
 			'settings' => 'cpp_text_intro',
 			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
 		)
 	);
+
+	if (isset($wp_customize->selective_refresh)) {
+		$wp_customize->selective_refresh->add_partial(
+			'cpp_text_intro',
+			array(
+				'selector' => '.protected-intro-text',
+				'container_inclusive' => false,
+				'render_callback' => function () {
+					return get_option('cpp_text_intro');
+				}
+			)
+		);
+	}
 
 	//  =============================
 	//  = Protected Label Text
@@ -242,7 +287,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 		'cpp_label_text',
 		array(
 			'type' => 'textarea',
-			'label' => __('Protected Label Text'),
+			'label' => __('Protected Label Text', 'customize-private-protected'),
 			'section' => 'cpp_plugin_settings',
 			'settings' => 'cpp_label_text',
 			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
@@ -266,7 +311,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 	$wp_customize->add_control(
 		'cpp_button_text',
 		array(
-			'label' => __('Protected Button Text'),
+			'label' => __('Protected Button Text', 'customize-private-protected'),
 			'section' => 'cpp_plugin_settings',
 			'settings' => 'cpp_button_text',
 			'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
@@ -294,8 +339,8 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			$wp_customize,
 			'cpp_button__x_padding',
 			array(
-				'label' => __('Protected Button Horizontal Padding'),
-				'description' => __('Controls padding inside the button to the left and right of the button text in pixels (px). Leave blank for default'),
+				'label' => __('Protected Button Horizontal Padding', 'customize-private-protected'),
+				'description' => __('Controls padding inside the button to the left and right of the button text in pixels (px). Leave blank for default', 'customize-private-protected'),
 				'type' => 'number',
 				'settings' => 'cpp_button_x_padding',
 				'section' => 'cpp_plugin_settings',
@@ -322,8 +367,8 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			$wp_customize,
 			'cpp_button_y_padding',
 			array(
-				'label' => __('Protected Button Vertical Padding'),
-				'description' => __('Controls padding inside the button above and below the button text in pixels (px). Leave blank for default'),
+				'label' => __('Protected Button Vertical Padding', 'customize-private-protected'),
+				'description' => __('Controls padding inside the button above and below the button text in pixels (px). Leave blank for default', 'customize-private-protected'),
 				'type' => 'number',
 				'settings' => 'cpp_button_y_padding',
 				'section' => 'cpp_plugin_settings',
@@ -385,7 +430,7 @@ function customize_pp_plugin_set_protected_prefix()
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = (post_password_required()) ? $cpp_prefix : '';
 
-	return __($cpp_prefix . '%s');
+	return __($cpp_prefix . '%s', 'customize-private-protected');
 }
 
 add_filter('protected_title_format', 'customize_pp_plugin_set_protected_prefix');
@@ -397,7 +442,7 @@ function customize_pp_plugin_set_private_prefix()
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = (get_post_status(get_the_ID()) == 'private') ? $cpp_prefix : '';
 
-	return __($cpp_prefix . '%s');
+	return __($cpp_prefix . '%s', 'customize-private-protected');
 }
 add_filter('private_title_format', 'customize_pp_plugin_set_private_prefix');
 
@@ -409,7 +454,7 @@ function customize_pp_plugin_register_widgets()
 
 	register_sidebar(
 		array(
-			'name' => __('Widgetized Before Password Form', 'cpp'),
+			'name' => __('Widgetized Before Password Form', 'customize-private-protected'),
 			'id' => 'widgetized-before-password-form',
 			'before_widget' => '<div id="%1$s" class="widget %2$s">',
 			'after_widget' => '</div>',
@@ -420,7 +465,7 @@ function customize_pp_plugin_register_widgets()
 
 	register_sidebar(
 		array(
-			'name' => __('Widgetized After Password Form', 'cpp'),
+			'name' => __('Widgetized After Password Form', 'customize-private-protected'),
 			'id' => 'widgetized-after-password-form',
 			'before_widget' => '<div id="%1$s" class="widget %2$s">',
 			'after_widget' => '</div>',
@@ -468,7 +513,7 @@ function customize_pp_plugin_form($output)
 	ob_end_clean();
 
 	if (false == $cpp_use_default_form) {
-		$output = $before_area . '<p>' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
+		$output = $before_area . '<p class="protected-intro-text">' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
 		' . '<label class="cpp-label" for="' . esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="' . esc_attr__($cpp_button_padding) . '" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
 		</form>' . $after_area;
 	} else if (function_exists('et_password_form')) { /* if divi theme */
@@ -515,3 +560,46 @@ function customize_pp_plugin_styles()
 }
 
 add_action('wp_enqueue_scripts', 'customize_pp_plugin_styles');
+
+/**
+ * Register and enqueue plugin styles
+ */
+function customize_pp_plugin_customizer_live_preview()
+{
+	wp_enqueue_script(
+		'cpp-customizer-preview',
+		plugins_url('/js/cpp-customizer-preview.js', __FILE__),
+		array('jquery'),
+		'1.0',
+		true
+	);
+
+	// Get data that you want to pass to your JavaScript
+	$prefixProtected = get_option('cpp_prefix_protected', '');
+	$prefixPrivate = get_option('cpp_prefix_private', '');
+
+	// Create an array with the data
+	$localized_data = array(
+		'prefixProtected' => $prefixProtected,
+		'prefixPrivate' => $prefixPrivate,
+	);
+
+	// Use wp_localize_script() to make the data available to your JavaScript
+	wp_localize_script('cpp-customizer-preview', 'pageData', $localized_data);
+
+}
+add_action('customize_preview_init', 'customize_pp_plugin_customizer_live_preview');
+
+function customize_pp_plugin_body_class($classes)
+{
+	if (post_password_required()) {
+		$classes[] = 'is-protected';
+	}
+
+	if (get_post_status() == 'private') {
+		$classes[] = 'is-private';
+	}
+
+	return $classes;
+}
+add_filter('body_class', 'customize_pp_plugin_body_class');

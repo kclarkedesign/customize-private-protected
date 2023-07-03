@@ -49,6 +49,10 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 
 == Changelog ==
 
+= 1.3.0 - 07-03-2023 =
+- Enhancement - Tweaked selective refresh to improve user experience for supported themes
+- Enhancement - Text domain namespace added for internationalization support
+
 = 1.2.0 - 04-15-2023 =
 - Enhancement - Implemented selective refresh to improve user experience
 
