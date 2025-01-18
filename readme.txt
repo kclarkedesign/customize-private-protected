@@ -2,10 +2,10 @@
 Plugin Name: Customize Private & Protected
 Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
-Tags: page title, title prefix, password protected, widget, change prefix, change, customize, private, protect, password, prefix, remove
+Tags: private, password protected, widget, prefix, remove
 Requires at least: 5.8
-Tested up to: 6.2.2
-Stable tag: 1.3.0
+Tested up to: 6.7.1
+Stable tag: 1.3.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -48,6 +48,17 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.3.2 - 01-18-2025 =
+- Tested - Passed tests with WordPress version 6.7.1
+- Fix - Added div element to clear float from form submit button
+
+= 1.3.2 - 05-19-2024 =
+- Tested - Passed tests with WordPress version 6.5.3
+
+= 1.3.1 - 01-13-2024 =
+- Tested - Passed tests with WordPress version 6.4.2
+- Tested - Passed tests with PHP versions up to 8.1.23
 
 = 1.3.0 - 07-03-2023 =
 - Enhancement - Tweaked selective refresh to improve user experience for supported themes

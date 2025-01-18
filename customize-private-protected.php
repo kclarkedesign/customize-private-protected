@@ -3,7 +3,7 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.3.0
+Version: 1.3.3
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 */
@@ -45,10 +45,14 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			$describedby_attr = $description_id;
 			?>
 			<?php if (!empty($this->label)): ?>
-				<label for="<?php echo esc_attr($input_id); ?>" class="customize-control-title"><?php echo esc_html($this->label); ?></label>
+				<label for="<?php echo esc_attr($input_id); ?>" class="customize-control-title">
+					<?php echo esc_html($this->label); ?>
+				</label>
 			<?php endif; ?>
 			<?php if (!empty($this->description)): ?>
-				<span id="<?php echo esc_attr($description_id); ?>" class="description customize-control-description"><?php echo $this->description; ?></span>
+				<span id="<?php echo esc_attr($description_id); ?>" class="description customize-control-description">
+					<?php echo $this->description; ?>
+				</span>
 			<?php endif; ?>
 			<div class="cpp-customize-control input-group">
 				<input id="<?php echo esc_attr($input_id); ?>" class="form-control" type="<?php echo esc_attr($this->type); ?>"
@@ -514,8 +518,7 @@ function customize_pp_plugin_form($output)
 
 	if (false == $cpp_use_default_form) {
 		$output = $before_area . '<p class="protected-intro-text">' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
-		' . '<label class="cpp-label" for="' . esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="' . esc_attr__($cpp_button_padding) . '" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" />
-		</form>' . $after_area;
+		' . '<label class="cpp-label" for="' . esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="' . esc_attr__($cpp_button_padding) . '" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" /><div style="clear:both;"></div></form>' . $after_area;
 	} else if (function_exists('et_password_form')) { /* if divi theme */
 		$output = $before_area . et_password_form() . $after_area;
 	} else {
