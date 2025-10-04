@@ -49,10 +49,10 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 
 == Changelog ==
 
-= 1.3.2 - 10-04-2025 =
+= 1.3.4 - 10-04-2025 =
 - Tested - Passed tests with WordPress version 6.8.3
 
-= 1.3.2 - 01-18-2025 =
+= 1.3.3 - 01-18-2025 =
 - Tested - Passed tests with WordPress version 6.7.1
 - Fix - Added div element to clear float from form submit button
 
