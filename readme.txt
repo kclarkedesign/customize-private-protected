@@ -4,8 +4,8 @@ Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: private, password protected, widget, prefix, remove
 Requires at least: 5.8
-Tested up to: 6.7.1
-Stable tag: 1.3.3
+Tested up to: 6.8.3
+Stable tag: 1.3.4
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -48,6 +48,9 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.3.2 - 10-04-2025 =
+- Tested - Passed tests with WordPress version 6.8.3
 
 = 1.3.2 - 01-18-2025 =
 - Tested - Passed tests with WordPress version 6.7.1
