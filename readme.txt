@@ -4,8 +4,8 @@ Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: private, password protected, widget, prefix, remove
 Requires at least: 5.8
-Tested up to: 6.8.3
-Stable tag: 1.3.4
+Tested up to: 7.1
+Stable tag: 1.3.5
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -49,6 +49,14 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 
 == Changelog ==
 
+= 1.3.5 - 09-27-2026 =
+- Tested - Passed tests with WordPress version 7.1
+- Fix - A `%` character in a custom title prefix no longer breaks the page on PHP 8
+- Fix - Password field no longer caps entries at 20 characters (core allows up to 255)
+- Fix - Password form no longer emits a duplicate `class` attribute, so theme styles for `.post-password-form` apply again
+- Fix - Password form now shows the "Invalid password" message and preserves the redirect after a wrong attempt, matching WordPress core since 6.8
+- Feature - Added Customizer color pickers for the password field's background and text color, to fix white-on-white fields on some themes
+
 = 1.3.4 - 10-04-2025 =
 - Tested - Passed tests with WordPress version 6.8.3
 
@@ -85,12 +93,6 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 - Tested - Passed test with WordPress version 6.0.2
 - Enhancement - Added dismissible notice for plugin review
 
-= 1.0.0 - 07-21-2022 =
-- Tested - Passed test with WordPress version 6.0.1
-
-= 1.0.0 - 05-25-2022 =
-- Tested - Passed test with WordPress version 6.0
-
 = 1.0.0 - 04-06-2022 =
 - Tested - Passed test with WordPress version 5.9.3
 - Enhancement - Updated default values for button and label
@@ -101,4 +103,4 @@ If you'd like to support future development, [buy me a tea](https://www.paypal.c
 - Feature - Added option to display Wordpress' default form with widgets
 
 = 0.1.0 - 08-31-2021 =
-- Iniital Release
+- Initial Release

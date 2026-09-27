@@ -3,10 +3,15 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.3.4
+Version: 1.3.5
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: customize-private-protected
 */
+
+defined('ABSPATH') || exit;
 
 function get_filters_for($hook = '')
 {
@@ -383,6 +388,58 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			)
 		)
 	);
+
+	//  =============================
+	//  = Password Input Colors
+	//  =============================
+
+	$wp_customize->add_setting(
+		'cpp_input_bg_color',
+		array(
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => '',
+			'sanitize_callback' => 'sanitize_hex_color',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Color_Control(
+			$wp_customize,
+			'cpp_input_bg_color',
+			array(
+				'label' => __('Password Field Background Color', 'customize-private-protected'),
+				'description' => __('Leave blank for default', 'customize-private-protected'),
+				'section' => 'cpp_plugin_settings',
+				'settings' => 'cpp_input_bg_color',
+				'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
+			)
+		)
+	);
+
+	$wp_customize->add_setting(
+		'cpp_input_text_color',
+		array(
+			'type' => 'option',
+			'capability' => 'manage_options',
+			'default' => '',
+			'sanitize_callback' => 'sanitize_hex_color',
+		)
+	);
+
+	$wp_customize->add_control(
+		new WP_Customize_Color_Control(
+			$wp_customize,
+			'cpp_input_text_color',
+			array(
+				'label' => __('Password Field Text Color', 'customize-private-protected'),
+				'description' => __('Leave blank for default', 'customize-private-protected'),
+				'section' => 'cpp_plugin_settings',
+				'settings' => 'cpp_input_text_color',
+				'active_callback' => 'customize_pp_plugin_hide_form_options_condition'
+			)
+		)
+	);
 }
 
 add_action('customize_register', 'customize_pp_plugin_register_customizer');
@@ -434,7 +491,8 @@ function customize_pp_plugin_set_protected_prefix()
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = (post_password_required()) ? $cpp_prefix : '';
 
-	return __($cpp_prefix . '%s', 'customize-private-protected');
+	// Escape literal % in a user-entered prefix so sprintf() (called by wp_get_document_title() et al) doesn't choke on it.
+	return str_replace('%', '%%', $cpp_prefix) . '%s';
 }
 
 add_filter('protected_title_format', 'customize_pp_plugin_set_protected_prefix');
@@ -446,7 +504,7 @@ function customize_pp_plugin_set_private_prefix()
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = (get_post_status(get_the_ID()) == 'private') ? $cpp_prefix : '';
 
-	return __($cpp_prefix . '%s', 'customize-private-protected');
+	return str_replace('%', '%%', $cpp_prefix) . '%s';
 }
 add_filter('private_title_format', 'customize_pp_plugin_set_private_prefix');
 
@@ -485,10 +543,11 @@ add_action('widgets_init', 'customize_pp_plugin_register_widgets');
  * Build Widgets and Customized Protected form area
  */
 
-function customize_pp_plugin_form($output)
+function customize_pp_plugin_form($output, $post_arg = null, $invalid_password = '')
 {
 	global $post;
 
+	$post = $post_arg ?: $post;
 	$cpp_use_default_form = get_option('cpp_use_default_form', false);
 
 	/* Create Before form area */
@@ -506,7 +565,21 @@ function customize_pp_plugin_form($output)
 		$x_padding = ('' == get_option('cpp_button_x_padding')) ? '' : get_option('cpp_button_x_padding') . 'px;';
 		$cpp_button_padding = ('' == $y_padding && '' == $x_padding) ? '' : 'padding: ' . $y_padding . $x_padding . '';
 
-		$label_selector = 'pwbox-' . (empty($post->ID) ? rand() : $post->ID);
+		$input_bg_color = get_option('cpp_input_bg_color', '');
+		$input_text_color = get_option('cpp_input_text_color', '');
+		$cpp_input_style = '';
+		$cpp_input_style .= $input_bg_color ? 'background-color:' . $input_bg_color . ';' : '';
+		$cpp_input_style .= $input_text_color ? 'color:' . $input_text_color . ';' : '';
+
+		$post_id = empty($post->ID) ? 0 : $post->ID;
+		$label_selector = 'pwbox-' . (empty($post_id) ? wp_rand() : $post_id);
+
+		$redirect_field = empty($post_id) ? '' : '<input type="hidden" name="redirect_to" value="' . esc_attr(get_permalink($post_id)) . '" />';
+
+		$invalid_password_html = $invalid_password
+			? '<p class="cpp-invalid-password" role="alert">' . esc_html($invalid_password) . '</p>'
+			: '';
+		$aria = $invalid_password ? ' aria-describedby="error-' . esc_attr($label_selector) . '"' : '';
 	}
 
 
@@ -517,8 +590,10 @@ function customize_pp_plugin_form($output)
 	ob_end_clean();
 
 	if (false == $cpp_use_default_form) {
-		$output = $before_area . '<p class="protected-intro-text">' . $cpp_intro . '</p>' . '<form class="cpp-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" class="post-password-form" method="post">
-		' . '<label class="cpp-label" for="' . esc_attr__($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . $label_selector . '" type="password" size="20" maxlength="20" /><input class="cpp-submit" style="' . esc_attr__($cpp_button_padding) . '" type="submit" name="Submit" value="' . esc_attr__($cpp_button_text) . '" /><div style="clear:both;"></div></form>' . $after_area;
+		$output = $before_area . '<form class="cpp-form post-password-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" method="post">'
+			. '<p style="margin:0;">' . $redirect_field . $invalid_password_html . '</p>'
+			. '<p class="protected-intro-text">' . $cpp_intro . '</p>'
+			. '<label class="cpp-label" for="' . esc_attr($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . esc_attr($label_selector) . '" type="password" size="20" required' . $aria . ' style="' . esc_attr($cpp_input_style) . '" /><input class="cpp-submit" style="' . esc_attr($cpp_button_padding) . '" type="submit" name="Submit" value="' . esc_attr($cpp_button_text) . '" /><div style="clear:both;"></div></form>' . $after_area;
 	} else if (function_exists('et_password_form')) { /* if divi theme */
 		$output = $before_area . et_password_form() . $after_area;
 	} else {
@@ -529,7 +604,7 @@ function customize_pp_plugin_form($output)
 	return $output;
 }
 
-add_filter('the_password_form', 'customize_pp_plugin_form', 11);
+add_filter('the_password_form', 'customize_pp_plugin_form', 11, 3);
 
 
 /**
