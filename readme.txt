@@ -3,7 +3,7 @@ Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: password-protected, private, prefix, password-form, post-title
 Requires at least: 5.8
-Tested up to: 7.1.2
+Tested up to: 7.1
 Stable tag: 1.6.0
 Requires PHP: 7.0
 License: GPLv2 or later
