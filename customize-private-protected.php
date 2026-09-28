@@ -3,7 +3,7 @@
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
 Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.3.5
+Version: 1.3.6
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 License: GPLv2 or later
@@ -47,7 +47,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 
 			$input_id = '_customize-input-cpp_' . $id;
 			$description_id = $input_id . '_description';
-			$describedby_attr = $description_id;
+			$describedby_attr = !empty($this->description) ? ' aria-describedby="' . esc_attr($description_id) . '"' : '';
 			?>
 			<?php if (!empty($this->label)): ?>
 				<label for="<?php echo esc_attr($input_id); ?>" class="customize-control-title">
@@ -56,7 +56,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			<?php endif; ?>
 			<?php if (!empty($this->description)): ?>
 				<span id="<?php echo esc_attr($description_id); ?>" class="description customize-control-description">
-					<?php echo $this->description; ?>
+					<?php echo esc_html($this->description); ?>
 				</span>
 			<?php endif; ?>
 			<div class="cpp-customize-control input-group">

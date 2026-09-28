@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: private, password protected, widget, prefix, remove
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 1.3.5
+Stable tag: 1.3.6
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -48,6 +48,10 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.3.6 - 09-27-2026 =
+- Fix - Escaped two unescaped output points in the Customizer's custom control (flagged by WordPress Plugin Check): a control's description text, and its `aria-describedby` attribute, which was also outputting a bare unwrapped ID instead of a real attribute
+- First release shipped via the new automated GitHub Actions → SVN pipeline
 
 = 1.3.5 - 09-27-2026 =
 - Tested - Passed tests with WordPress version 7.1
