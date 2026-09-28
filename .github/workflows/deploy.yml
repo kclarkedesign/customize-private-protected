@@ -1,0 +1,43 @@
+name: Deploy to WordPress.org
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  version-guard:
+    name: Verify tag matches plugin version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare tag, plugin header, and readme stable tag
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          HEADER_VERSION=$(grep -oP '^Version:\s*\K.+' customize-private-protected.php | tr -d '\r')
+          STABLE_TAG=$(grep -oP '^Stable tag:\s*\K.+' readme.txt | tr -d '\r')
+
+          echo "git tag:       $TAG"
+          echo "header version: $HEADER_VERSION"
+          echo "stable tag:     $STABLE_TAG"
+
+          if [ "$TAG" != "$HEADER_VERSION" ] || [ "$TAG" != "$STABLE_TAG" ]; then
+            echo "::error::Version mismatch — tag ($TAG), Version header ($HEADER_VERSION), and Stable tag ($STABLE_TAG) must all match."
+            exit 1
+          fi
+
+  deploy:
+    name: Deploy
+    needs: version-guard
+    runs-on: ubuntu-latest
+    environment: wordpress-org
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to wordpress.org
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          ASSETS_DIR: .wordpress-org

@@ -1,0 +1,37 @@
+name: Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  plugin-check:
+    name: WordPress Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          exclude-directories: '.github,.wordpress-org'
+
+  php-lint:
+    name: PHP lint (${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Requires PHP 7.0 (readme.txt), so lint both ends of the supported range.
+        php: ['7.0', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Lint
+        run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l

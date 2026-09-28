@@ -1,0 +1,26 @@
+name: Sync readme & assets
+
+# Pushes readme.txt and the .wordpress-org/ assets to the SVN trunk without
+# cutting a release. Lets a "Tested up to" bump ship as a plain commit.
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - readme.txt
+      - .wordpress-org/**
+
+jobs:
+  trunk:
+    name: Push to trunk
+    runs-on: ubuntu-latest
+    environment: wordpress-org
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: WordPress.org plugin asset/readme update
+        uses: 10up/action-wordpress-plugin-asset-update@stable
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          ASSETS_DIR: .wordpress-org
