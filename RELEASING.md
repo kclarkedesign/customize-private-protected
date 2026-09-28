@@ -31,7 +31,8 @@ deployed`. Keep this flag set.
    `customize-private-protected.php`, and `Stable tag:` in `readme.txt`
    don't all match exactly.
 2. `deploy` job — pushes the plugin code to SVN `trunk` and cuts a new
-   `tags/{version}` folder. **This is the actual release.**
+   `tags/{version}` folder (the actual release), then creates a matching
+   GitHub Release on the tag via `gh release create --generate-notes`.
 
 ## How to cut a release
 
