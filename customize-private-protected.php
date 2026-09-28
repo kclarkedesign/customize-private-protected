@@ -61,7 +61,7 @@ function customize_pp_plugin_register_customizer($wp_customize)
 			<?php endif; ?>
 			<div class="cpp-customize-control input-group">
 				<input id="<?php echo esc_attr($input_id); ?>" class="form-control" type="<?php echo esc_attr($this->type); ?>"
-					<?php echo $describedby_attr; ?> 			<?php $this->input_attrs(); ?> 			<?php if (!isset($this->input_attrs['value'])): ?> value="<?php echo esc_attr($this->value()); ?>" <?php endif; ?> 			<?php $this->link(); ?> />
+					<?php echo $describedby_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built above with esc_attr(), empty when there's no description. ?> 			<?php $this->input_attrs(); ?> 			<?php if (!isset($this->input_attrs['value'])): ?> value="<?php echo esc_attr($this->value()); ?>" <?php endif; ?> 			<?php $this->link(); ?> />
 				<div class="input-group-append">
 					<span class="input-group-text">px</span>
 				</div>
