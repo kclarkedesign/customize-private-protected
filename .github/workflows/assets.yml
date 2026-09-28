@@ -9,6 +9,7 @@ on:
     paths:
       - readme.txt
       - .wordpress-org/**
+  workflow_dispatch: {}
 
 jobs:
   trunk:
