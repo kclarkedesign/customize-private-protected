@@ -628,7 +628,7 @@ function customize_pp_plugin_register_settings()
 			'customize_pp_plugin_render_settings_field',
 			'customize-private-protected',
 			'cpp_plugin_settings_section',
-			array_merge($field, array('id' => $option_name))
+			array_merge($field, array('id' => $option_name, 'label_for' => $option_name))
 		);
 	}
 }
@@ -644,7 +644,7 @@ function customize_pp_plugin_render_settings_field($args)
 			// A hidden "0" first so an unchecked box still submits a value
 			// (browsers omit unchecked checkboxes from the POST entirely).
 			printf(
-				'<input type="hidden" name="%1$s" value="0" /><label><input type="checkbox" name="%1$s" value="1" %2$s /> %3$s</label>',
+				'<input type="hidden" name="%1$s" value="0" /><label><input type="checkbox" id="%1$s" name="%1$s" value="1" %2$s /> %3$s</label>',
 				esc_attr($id),
 				checked($value, true, false),
 				esc_html__('Enable', 'customize-private-protected')
@@ -652,28 +652,28 @@ function customize_pp_plugin_render_settings_field($args)
 			break;
 		case 'textarea':
 			printf(
-				'<textarea name="%1$s" rows="3" class="large-text">%2$s</textarea>',
+				'<textarea id="%1$s" name="%1$s" rows="3" class="large-text">%2$s</textarea>',
 				esc_attr($id),
 				esc_textarea($value)
 			);
 			break;
 		case 'color':
 			printf(
-				'<input type="text" name="%1$s" value="%2$s" class="cpp-color-field" placeholder="#rrggbb" />',
+				'<input type="text" id="%1$s" name="%1$s" value="%2$s" class="cpp-color-field" placeholder="#rrggbb" />',
 				esc_attr($id),
 				esc_attr($value)
 			);
 			break;
 		case 'number':
 			printf(
-				'<input type="number" min="0" name="%1$s" value="%2$s" class="small-text" />',
+				'<input type="number" min="0" id="%1$s" name="%1$s" value="%2$s" class="small-text" />',
 				esc_attr($id),
 				esc_attr($value)
 			);
 			break;
 		default:
 			printf(
-				'<input type="text" name="%1$s" value="%2$s" class="regular-text" />',
+				'<input type="text" id="%1$s" name="%1$s" value="%2$s" class="regular-text" />',
 				esc_attr($id),
 				esc_attr($value)
 			);
