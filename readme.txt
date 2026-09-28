@@ -1,20 +1,35 @@
-=== Customize Private & Protected - Change or remove title prefix and more  ===
-Plugin Name: Customize Private & Protected
+=== Customize Private & Protected: Password Form & Prefix ===
 Contributors: kirkclarke
 Donate link: https://www.paypal.com/paypalme/KirkClarke
-Tags: private, password protected, widget, prefix, remove
+Tags: password-protected, private, prefix, password-form, post-title
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Use WP Customize to modify elements of password protected and private posts and pages.
+Remove or change the "Protected:" and "Private:" title prefix. Customize the password form text, button, colors and widgets. Block themes too.
 
 == Description ==
 
-Use this plugin to hide or edit the prefix on your password protected or private page, add widget areas before and after the password protected form, and modify the label and submit button text. These changes are global and apply to all protected and private content respectively.
+Extends WordPress's own built-in password-protected and private post/page settings — no second password system, no Pro tier, no upsells.
+
+**Title prefix**
+
+* Hide the "Protected: " / "Private: " prefix WordPress adds to a password-protected or private post's title
+* Or replace it with your own text
+
+**Password form**
+
+* Rewrite the intro text, the password label, and the submit button text
+* Set the password field's and submit button's colors, and the button's padding
+* Add widget areas before and after the form
+* Custom "Invalid password" text for a wrong attempt (WordPress 6.8+)
+* Custom excerpt text for protected posts in lists
+* Set how long the password cookie lasts, or make it a session-only cookie
+* Hide password-protected posts from your homepage, archives, search results, and feeds, while keeping them reachable at their own URL
+* Or keep your theme's own password form (Divi supported) and just add the widget areas
 
 Configure everything through the Customizer (Appearance > Customize) or through Settings > Private & Protected, a plain settings page for block themes, which hide the Customizer. Both edit the same settings.
 
@@ -22,7 +37,7 @@ Configure everything through the Customizer (Appearance > Customize) or through 
 
 Through wordpress admin:
 
-1. Go to Plugins -> Add New
+1. Go to Plugins > Add Plugin
 1. Search for “Customize Private & Protected”
 1. Install the plugin
 1. Activate it
@@ -34,22 +49,68 @@ Unzip customize-private-protected.zip and upload the folder to the /wp-content/p
 Activate the plugin through the ‘Plugins’ menu in WordPress
 
 == Frequently Asked Questions ==
-	
-= How to use? =
-	
-After activation, use the WordPress Theme customizer (Dashboard > Appearance > Customize OR "Theme Customizer" in the WP admin bar), or Dashboard > Settings > Private & Protected if your theme hides the Customizer. For password protected pages, the widgets areas are found in the widgets section of the customizer.
+
+= How do I remove "Protected: " from a password-protected page's title? =
+
+Turn on "Hide Prefix" in the settings.
+
+= How do I remove "Private: " from a private page's title? =
+
+The same "Hide Prefix" setting controls both the private and protected prefix.
+
+= Can I rename the prefix instead of removing it? =
+
+Yes — leave "Hide Prefix" off and set your own text in the Private Title Prefix / Protected Title Prefix fields.
+
+= How do I change the password form's text, or the wrong-password message? =
+
+The Protected Intro Text, Protected Label Text, and Protected Button Text fields cover the form itself; Invalid Password Text covers what shows after a wrong attempt.
+
+= I use a block theme and don't see Appearance > Customize — where are the settings? =
+
+Go to Settings > Private & Protected instead. It has every option the Customizer has, and edits the same values.
+
+= Does this change menus or the browser tab title too? =
+
+Yes — the prefix comes from the same title WordPress uses everywhere, so menus, widgets, and the browser tab all update along with the page's own heading.
+
+= Does this plugin add password protection to a page? =
+
+No. It only changes how WordPress's own built-in "Password Protected" and "Private" post visibility options look — you still set those from the post/page editor's Visibility setting.
+
+= Does it work with Divi? =
+
+Yes — turn on "Use Default Form" and the plugin hands off to Divi's own password form (still adding the widget areas around it).
+
+= Can I hide protected posts from my blog list, search results, and RSS feed? =
+
+Turn on "Hide From Lists." The post is still reachable at its own URL; it just won't appear in listings. (Private posts are already hidden from anyone who can't view them.)
+
+Something not covered here? [Ask in the support forum](https://wordpress.org/support/plugin/customize-private-protected/) — it's the fastest way to reach me.
 
 == Screenshots ==
 
-1. Modify settings using the customizer.
-2. For password protected pages/posts, two widget areas are added.
-3. Customize as you like.
+1. Customize the title prefix, intro text, label, and button text from the Customizer, with a live preview.
+2. Two widget areas — before and after the password form — show up under Appearance > Widgets.
+3. Add any widgets you like to those areas.
 
 == Donations ==
 
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.6.0 - 2026-09-28 =
+- Renamed the plugin to "Customize Private & Protected: Password Form & Prefix," and rewrote the tags, description, and FAQ, so it's findable by what it actually does
+- Feature - Custom "Invalid password" text for a wrong attempt (WordPress 6.8+)
+- Feature - Custom excerpt text for protected posts in lists (also works in block-theme Query Loops, where WordPress's own excerpt filter doesn't reach)
+- Feature - Password cookie lifetime: set how many days it lasts, or make it a session-only cookie
+- Feature - Hide password-protected posts from the homepage, archives, search results, and feeds (including block-theme Query Loop blocks), while keeping them reachable at their own URL
+- Fix - The custom password form's error message wasn't actually linked to its `aria-describedby`; screen readers now announce it
+- Fix - The custom form's submit button now picks up a block theme's Global Styles button color
+- Added Settings and Get Help links on the Plugins screen, and a Get Help link on the settings page
+- The "leave a review" notice now waits 14 days after activation, and its dismiss links persist correctly (they didn't before)
+- Fix - Every release since 1.3.6 had been publishing the plugin's actual `.git` directory (full commit history) into the public SVN repository, because `.distignore` never listed `.git`. Purged and fixed; no secrets were ever in that history
 
 = 1.5.0 - 09-27-2026 =
 - Feature - Added a Settings page under Settings > Private & Protected, with every option the Customizer has. Block themes (the default since WordPress 6.x) hide Appearance > Customize, so this makes every option reachable without it
