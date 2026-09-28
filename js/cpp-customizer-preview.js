@@ -25,22 +25,18 @@ jQuery(document).ready(function ($) {
   var is_protected = $("body").hasClass("is-protected");
 
   if (is_private || is_protected) {
-    var prevPrefix = is_protected
-      ? wp.customize("cpp_prefix_protected").get()
-      : wp.customize("cpp_prefix_private").get();
-
-    function handlePrefix(customizeElem, prevval, newval) {
+    function handlePrefix() {
       var hidePrefix = wp.customize("cpp_hide_prefix").get();
       var $titleElement = jQuery(".entry-title").length
         ? jQuery(".entry-title")
         : jQuery("body > h1");
 
-      if (jQuery("wp-block-post-title").length) {
-        $titleElement = jQuery("wp-block-post-title");
+      if (jQuery(".wp-block-post-title").length) {
+        $titleElement = jQuery(".wp-block-post-title");
       }
 
       if (!hidePrefix) {
-        updatedTitle =
+        var updatedTitle =
           (is_protected
             ? wp.customize("cpp_prefix_protected").get()
             : wp.customize("cpp_prefix_private").get()) +
@@ -49,20 +45,14 @@ jQuery(document).ready(function ($) {
 
         $titleElement.text(updatedTitle);
       }
-
-      prevval = newval;
     }
 
     wp.customize("cpp_prefix_private", function (value) {
-      value.bind(function (newval) {
-        handlePrefix("cpp_prefix_private", prevPrefix, newval);
-      });
+      value.bind(handlePrefix);
     });
 
     wp.customize("cpp_prefix_protected", function (value) {
-      value.bind(function (newval) {
-        handlePrefix("cpp_prefix_protected", prevPrefix, newval);
-      });
+      value.bind(handlePrefix);
     });
 
     wp.customize("cpp_text_intro", function (value) {

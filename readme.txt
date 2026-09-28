@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: private, password protected, widget, prefix, remove
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 1.3.6
+Stable tag: 1.4.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -48,6 +48,18 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.4.0 - 09-27-2026 =
+- Feature - Added Customizer color pickers for the submit button's background and text color
+- Fix - Live preview: the private-post title prefix preview rendered nothing (missing return); the protected-post one rendered the wrong thing entirely (a format string, not the title). Both properly re-render the title now, which also fixes the live preview causing a full form reload while typing
+- Fix - Live preview JS: a broken selector meant it never found the title in block themes; an accidental global variable
+- Fix - Checkboxes and pixel-padding fields were sanitized with a text/HTML sanitizer instead of a boolean or number one
+- Fix - Prefix filters now use the post WordPress passes them, instead of only the currently-queried global post (matters for titles shown in menus, widgets, and lists)
+- Fix - The `is-protected`/`is-private` body classes and the frontend stylesheet no longer apply to archive pages just because the first listed post happens to be private or protected
+- Fix - The "leave a review" admin notice's role check was broken (checked role names WordPress doesn't use) and dismissing it never stuck; both fixed
+- Fix - Default values now match between the Customizer and the front end, so nothing changes until a value is actually saved
+- Renamed an internal class out of WordPress core's own naming space, to avoid ever colliding with it; removed a leftover unused function
+- Assets are now cache-busted with the plugin version, and the plugin's stylesheet only loads on private/protected pages instead of every page
 
 = 1.3.6 - 09-27-2026 =
 - Fix - Escaped two unescaped output points in the Customizer's custom control (flagged by WordPress Plugin Check): a control's description text, and its `aria-describedby` attribute, which was also outputting a bare unwrapped ID instead of a real attribute
