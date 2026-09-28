@@ -4,6 +4,7 @@
         "php": "8.0",
         "wp": "latest"
     },
+    "extraLibraries": ["wp-cli"],
     "steps": [
         {
             "step": "login",
