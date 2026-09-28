@@ -1,9 +1,11 @@
 <?php
 /*
-Plugin Name: Customize Private & Protected
-Plugin URI: https://github.com/kclarkedesign/cpp
+Plugin Name: Customize Private & Protected: Password Form & Prefix
+Plugin URI: https://github.com/kclarkedesign/customize-private-protected
 Description: Modify elements of password protected and private posts and pages, via the Customizer or a plain settings page.
-Version: 1.5.0
+Version: 1.6.0
+Requires at least: 5.8
+Requires PHP: 7.0
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 License: GPLv2 or later
@@ -13,7 +15,7 @@ Text Domain: customize-private-protected
 
 defined('ABSPATH') || exit;
 
-define('CPP_VERSION', '1.5.0');
+define('CPP_VERSION', '1.6.0');
 
 /**
  * Sanitize a "leave blank for default" pixel padding value: keep it blank if
@@ -605,6 +607,39 @@ function customize_pp_plugin_settings_fields()
 			'default' => '',
 			'description' => __('Leave blank for default.', 'customize-private-protected') . ' ' . $only_with_custom_form,
 		),
+
+		//  =============================
+		//  = Advanced (Settings page only — no Customizer control)
+		//  =============================
+
+		'cpp_invalid_password_text' => array(
+			'label' => __('Invalid Password Text', 'customize-private-protected'),
+			'type' => 'text',
+			'sanitize' => 'sanitize_text_field',
+			'default' => '',
+			'description' => __('Shown after a wrong password attempt. Leave blank for WordPress\'s own text.', 'customize-private-protected'),
+		),
+		'cpp_excerpt_text' => array(
+			'label' => __('Protected Excerpt Text', 'customize-private-protected'),
+			'type' => 'text',
+			'sanitize' => 'sanitize_text_field',
+			'default' => '',
+			'description' => __('Replaces "There is no excerpt because this is a protected post." in post lists. Leave blank for the default.', 'customize-private-protected'),
+		),
+		'cpp_password_expires_days' => array(
+			'label' => __('Password Cookie Expires (days)', 'customize-private-protected'),
+			'type' => 'number',
+			'sanitize' => 'customize_pp_plugin_sanitize_padding',
+			'default' => '',
+			'description' => __('0 clears the password as soon as the browser closes. Leave blank for WordPress\'s default (10 days).', 'customize-private-protected'),
+		),
+		'cpp_hide_protected_from_lists' => array(
+			'label' => __('Hide From Lists', 'customize-private-protected'),
+			'type' => 'checkbox',
+			'sanitize' => 'rest_sanitize_boolean',
+			'default' => false,
+			'description' => __('Hide password protected posts from the home page, archives, search results, and feeds. (Private posts are already hidden from visitors who can\'t view them.) Each post is still reachable at its own URL.', 'customize-private-protected'),
+		),
 	);
 }
 
@@ -715,9 +750,10 @@ function customize_pp_plugin_render_settings_page()
 		<p>
 			<?php
 			printf(
-				/* translators: %s: a link reading "Overland Innovators" */
-				esc_html__('Built by %s.', 'customize-private-protected'),
-				'<a href="https://kirkclarke.com" target="_blank" rel="noopener noreferrer">Overland Innovators</a>'
+				/* translators: 1: a link reading "Overland Innovators", 2: a link reading "Get help" */
+				esc_html__('Built by %1$s. Questions or a bug to report? %2$s.', 'customize-private-protected'),
+				'<a href="https://kirkclarke.com" target="_blank" rel="noopener noreferrer">Overland Innovators</a>',
+				'<a href="https://wordpress.org/support/plugin/customize-private-protected/" target="_blank" rel="noopener noreferrer">' . esc_html__('Get help', 'customize-private-protected') . '</a>'
 			);
 			?>
 		</p>
@@ -744,6 +780,32 @@ function customize_pp_plugin_settings_page_assets($hook)
 	);
 }
 add_action('admin_enqueue_scripts', 'customize_pp_plugin_settings_page_assets');
+
+/**
+ * "Settings" link on the Plugins screen.
+ */
+function customize_pp_plugin_action_links($links)
+{
+	$settings_link = '<a href="' . esc_url(admin_url('options-general.php?page=customize-private-protected')) . '">' . esc_html__('Settings', 'customize-private-protected') . '</a>';
+	array_unshift($links, $settings_link);
+	return $links;
+}
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'customize_pp_plugin_action_links');
+
+/**
+ * "Get help" row-meta link on the Plugins screen. Resolved wp.org support
+ * threads are the single biggest lever in wordpress.org's own
+ * search-ranking algorithm, and today nothing points users to the forum.
+ */
+function customize_pp_plugin_row_meta($links, $file)
+{
+	if (plugin_basename(__FILE__) !== $file) {
+		return $links;
+	}
+	$links[] = '<a href="https://wordpress.org/support/plugin/customize-private-protected/" target="_blank" rel="noopener noreferrer">' . esc_html__('Get help', 'customize-private-protected') . '</a>';
+	return $links;
+}
+add_filter('plugin_row_meta', 'customize_pp_plugin_row_meta', 10, 2);
 
 
 
@@ -808,6 +870,84 @@ function customize_pp_plugin_set_private_prefix($format, $post = null)
 	return str_replace('%', '%%', $cpp_prefix) . '%s';
 }
 add_filter('private_title_format', 'customize_pp_plugin_set_private_prefix', 10, 2);
+
+/**
+ * Override the "Invalid password" text WordPress shows after a wrong
+ * password attempt (core added this filter in 6.8). Applies to both our
+ * custom form and a theme's own form, since core renders the message
+ * before calling `the_password_form`.
+ */
+function customize_pp_plugin_invalid_password_text($text)
+{
+	$custom_text = get_option('cpp_invalid_password_text', '');
+	return ('' === $custom_text) ? $text : $custom_text;
+}
+add_filter('the_password_form_incorrect_password', 'customize_pp_plugin_invalid_password_text');
+
+/**
+ * Override the excerpt text WordPress shows for password-protected posts in
+ * lists. Core hard-codes that string and it bypasses `the_excerpt`, even in
+ * block-theme Query Loops — a gettext filter is the only hook that reaches
+ * both. Only registered when a custom value is set, so sites that don't use
+ * this option pay nothing.
+ */
+function customize_pp_plugin_excerpt_text($translation, $text, $domain)
+{
+	if ('default' !== $domain || 'There is no excerpt because this is a protected post.' !== $text) {
+		return $translation;
+	}
+	return get_option('cpp_excerpt_text', '');
+}
+function customize_pp_plugin_maybe_filter_excerpt_text()
+{
+	if ('' !== get_option('cpp_excerpt_text', '')) {
+		add_filter('gettext', 'customize_pp_plugin_excerpt_text', 10, 3);
+	}
+}
+add_action('init', 'customize_pp_plugin_maybe_filter_excerpt_text');
+
+/**
+ * Password cookie lifetime. Core defaults to 10 days; returning 0 makes it
+ * a session cookie that clears when the browser closes.
+ */
+function customize_pp_plugin_password_expires($expires)
+{
+	$days = get_option('cpp_password_expires_days', '');
+	if ('' === $days) {
+		return $expires;
+	}
+	return (0 === (int) $days) ? 0 : time() + ((int) $days * DAY_IN_SECONDS);
+}
+add_filter('post_password_expires', 'customize_pp_plugin_password_expires');
+
+/**
+ * Hide password protected posts from the home page, archives, search
+ * results, and feeds when enabled. Doesn't touch singular requests, so the
+ * post is still reachable at its own URL.
+ */
+function customize_pp_plugin_hide_from_lists($query)
+{
+	if (is_admin() || !$query->is_main_query() || $query->is_singular()) {
+		return;
+	}
+	if (get_option('cpp_hide_protected_from_lists', false)) {
+		$query->set('has_password', false);
+	}
+}
+add_action('pre_get_posts', 'customize_pp_plugin_hide_from_lists');
+
+/**
+ * Same, for a block-theme Query Loop block with its own query (not
+ * "Inherit query from template", so it isn't the main query above).
+ */
+function customize_pp_plugin_hide_from_query_loop($query_args)
+{
+	if (get_option('cpp_hide_protected_from_lists', false)) {
+		$query_args['has_password'] = false;
+	}
+	return $query_args;
+}
+add_filter('query_loop_block_query_vars', 'customize_pp_plugin_hide_from_query_loop');
 
 /**
  * Add Widget areas
@@ -886,7 +1026,7 @@ function customize_pp_plugin_form($output, $post_arg = null, $invalid_password =
 		$redirect_field = empty($post_id) ? '' : '<input type="hidden" name="redirect_to" value="' . esc_attr(get_permalink($post_id)) . '" />';
 
 		$invalid_password_html = $invalid_password
-			? '<p class="cpp-invalid-password" role="alert">' . esc_html($invalid_password) . '</p>'
+			? '<p id="error-' . esc_attr($label_selector) . '" class="cpp-invalid-password" role="alert">' . esc_html($invalid_password) . '</p>'
 			: '';
 		$aria = $invalid_password ? ' aria-describedby="error-' . esc_attr($label_selector) . '"' : '';
 	}
@@ -900,9 +1040,9 @@ function customize_pp_plugin_form($output, $post_arg = null, $invalid_password =
 
 	if (false == $cpp_use_default_form) {
 		$output = $before_area . '<form class="cpp-form post-password-form" action="' . esc_attr(site_url('wp-login.php?action=postpass', 'login_post')) . '" method="post">'
-			. '<p style="margin:0;">' . $redirect_field . $invalid_password_html . '</p>'
+			. '<div style="margin:0;">' . $redirect_field . $invalid_password_html . '</div>'
 			. '<p class="protected-intro-text">' . $cpp_intro . '</p>'
-			. '<label class="cpp-label" for="' . esc_attr($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . esc_attr($label_selector) . '" type="password" size="20" required' . $aria . ' style="' . esc_attr($cpp_input_style) . '" /><input class="cpp-submit" style="' . esc_attr($cpp_button_style) . '" type="submit" name="Submit" value="' . esc_attr($cpp_button_text) . '" /><div style="clear:both;"></div></form>' . $after_area;
+			. '<label class="cpp-label" for="' . esc_attr($label_selector) . '">' . $cpp_label . ' </label><input class="cpp-password" name="post_password" id="' . esc_attr($label_selector) . '" type="password" size="20" required' . $aria . ' style="' . esc_attr($cpp_input_style) . '" /><input class="cpp-submit wp-element-button" style="' . esc_attr($cpp_button_style) . '" type="submit" name="Submit" value="' . esc_attr($cpp_button_text) . '" /><div style="clear:both;"></div></form>' . $after_area;
 	} else if (function_exists('et_password_form')) { /* if divi theme */
 		$output = $before_area . et_password_form() . $after_area;
 	} else {
@@ -933,14 +1073,22 @@ function customize_pp_plugin_admin_review_notice()
 		return;
 	}
 
+	// Wait until the plugin's had a couple weeks of actual use before asking.
+	add_option('cpp_first_seen', time());
+	if (time() - (int) get_option('cpp_first_seen') < 14 * DAY_IN_SECONDS) {
+		return;
+	}
+
 	$dismiss_url = wp_nonce_url(add_query_arg('cpp_dismiss_review_notice', '1'), 'cpp_dismiss_review_notice');
 	?>
-	<div class="notice notice-info is-dismissible">
-		<p><?php esc_html_e('Find Customize Private & Protected helpful? Give it a 5-star rating on WordPress', 'customize-private-protected'); ?></p>
+	<div class="notice notice-info">
+		<p><?php esc_html_e('Find Customize Private & Protected helpful? A rating on WordPress.org helps other people find it.', 'customize-private-protected'); ?></p>
 		<p>
-			<a href="https://wordpress.org/support/plugin/customize-private-protected/reviews/#new-post" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Sure, you deserve it!', 'customize-private-protected'); ?></a>
+			<a href="https://wordpress.org/support/plugin/customize-private-protected/reviews/#new-post" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Leave a rating', 'customize-private-protected'); ?></a>
 			&nbsp;|&nbsp;
-			<a href="<?php echo esc_url($dismiss_url); ?>"><?php esc_html_e('Dismiss', 'customize-private-protected'); ?></a>
+			<a href="<?php echo esc_url($dismiss_url); ?>"><?php esc_html_e('Already did', 'customize-private-protected'); ?></a>
+			&nbsp;|&nbsp;
+			<a href="<?php echo esc_url($dismiss_url); ?>"><?php esc_html_e('No thanks', 'customize-private-protected'); ?></a>
 		</p>
 	</div>
 	<?php
@@ -948,8 +1096,8 @@ function customize_pp_plugin_admin_review_notice()
 add_action('admin_notices', 'customize_pp_plugin_admin_review_notice');
 
 /**
- * Persist a click on the review notice's own Dismiss link (the notice's
- * is-dismissible class only hides it for the current page load).
+ * Persist a click on either dismiss link above ("Already did" / "No
+ * thanks") so the notice stops showing for that user.
  */
 function customize_pp_plugin_maybe_dismiss_review_notice()
 {
