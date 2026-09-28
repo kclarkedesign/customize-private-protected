@@ -2,8 +2,8 @@
 /*
 Plugin Name: Customize Private & Protected
 Plugin URI: https://github.com/kclarkedesign/cpp
-Description: Use WP Customize to modify elements of password protected and private posts and pages.
-Version: 1.4.0
+Description: Modify elements of password protected and private posts and pages, via the Customizer or a plain settings page.
+Version: 1.5.0
 Author: Kirk Clarke
 Author URI: http://kirkclarke.com
 License: GPLv2 or later
@@ -13,7 +13,7 @@ Text Domain: customize-private-protected
 
 defined('ABSPATH') || exit;
 
-define('CPP_VERSION', '1.4.0');
+define('CPP_VERSION', '1.5.0');
 
 /**
  * Sanitize a "leave blank for default" pixel padding value: keep it blank if
@@ -503,6 +503,247 @@ function customize_pp_plugin_register_customizer($wp_customize)
 }
 
 add_action('customize_register', 'customize_pp_plugin_register_customizer');
+
+/**
+ * Settings page (Settings API) mirroring the Customizer controls above, so
+ * the plugin is usable on block themes, which hide Appearance > Customize.
+ * Registered against the exact same option names the Customizer controls
+ * use above, so either UI edits the same values.
+ */
+function customize_pp_plugin_settings_fields()
+{
+	$only_without_hide_prefix = __('Only used when "Hide Prefix" is off.', 'customize-private-protected');
+	$only_with_custom_form = __('Only used when "Use Default Form" is off.', 'customize-private-protected');
+
+	return array(
+		'cpp_hide_prefix' => array(
+			'label' => __('Hide Prefix', 'customize-private-protected'),
+			'type' => 'checkbox',
+			'sanitize' => 'rest_sanitize_boolean',
+			'default' => false,
+		),
+		'cpp_use_default_form' => array(
+			'label' => __('Use Default Form', 'customize-private-protected'),
+			'type' => 'checkbox',
+			'sanitize' => 'rest_sanitize_boolean',
+			'default' => false,
+		),
+		'cpp_prefix_private' => array(
+			'label' => __('Private Title Prefix', 'customize-private-protected'),
+			'type' => 'text',
+			'sanitize' => 'wp_kses_post',
+			'default' => 'Private: ',
+			'description' => $only_without_hide_prefix,
+		),
+		'cpp_prefix_protected' => array(
+			'label' => __('Protected Title Prefix', 'customize-private-protected'),
+			'type' => 'text',
+			'sanitize' => 'wp_kses_post',
+			'default' => 'Protected: ',
+			'description' => $only_without_hide_prefix,
+		),
+		'cpp_text_intro' => array(
+			'label' => __('Protected Intro Text', 'customize-private-protected'),
+			'type' => 'textarea',
+			'sanitize' => 'wp_kses_post',
+			'default' => 'To view this protected content, enter the password below:',
+			'description' => $only_with_custom_form,
+		),
+		'cpp_label_text' => array(
+			'label' => __('Protected Label Text', 'customize-private-protected'),
+			'type' => 'textarea',
+			'sanitize' => 'wp_kses_post',
+			'default' => 'Password: ',
+			'description' => $only_with_custom_form,
+		),
+		'cpp_button_text' => array(
+			'label' => __('Protected Button Text', 'customize-private-protected'),
+			'type' => 'text',
+			'sanitize' => 'wp_kses_post',
+			'default' => 'Enter',
+			'description' => $only_with_custom_form,
+		),
+		'cpp_button_x_padding' => array(
+			'label' => __('Button Horizontal Padding (px)', 'customize-private-protected'),
+			'type' => 'number',
+			'sanitize' => 'customize_pp_plugin_sanitize_padding',
+			'default' => 20,
+			'description' => __('Leave blank for default.', 'customize-private-protected') . ' ' . $only_with_custom_form,
+		),
+		'cpp_button_y_padding' => array(
+			'label' => __('Button Vertical Padding (px)', 'customize-private-protected'),
+			'type' => 'number',
+			'sanitize' => 'customize_pp_plugin_sanitize_padding',
+			'default' => 10,
+			'description' => __('Leave blank for default.', 'customize-private-protected') . ' ' . $only_with_custom_form,
+		),
+		'cpp_input_bg_color' => array(
+			'label' => __('Password Field Background Color', 'customize-private-protected'),
+			'type' => 'color',
+			'sanitize' => 'sanitize_hex_color',
+			'default' => '',
+			'description' => __('Leave blank for default.', 'customize-private-protected') . ' ' . $only_with_custom_form,
+		),
+		'cpp_input_text_color' => array(
+			'label' => __('Password Field Text Color', 'customize-private-protected'),
+			'type' => 'color',
+			'sanitize' => 'sanitize_hex_color',
+			'default' => '',
+			'description' => __('Leave blank for default.', 'customize-private-protected') . ' ' . $only_with_custom_form,
+		),
+		'cpp_button_bg_color' => array(
+			'label' => __('Submit Button Background Color', 'customize-private-protected'),
+			'type' => 'color',
+			'sanitize' => 'sanitize_hex_color',
+			'default' => '',
+			'description' => __('Leave blank for default.', 'customize-private-protected') . ' ' . $only_with_custom_form,
+		),
+		'cpp_button_text_color' => array(
+			'label' => __('Submit Button Text Color', 'customize-private-protected'),
+			'type' => 'color',
+			'sanitize' => 'sanitize_hex_color',
+			'default' => '',
+			'description' => __('Leave blank for default.', 'customize-private-protected') . ' ' . $only_with_custom_form,
+		),
+	);
+}
+
+function customize_pp_plugin_register_settings()
+{
+	add_settings_section('cpp_plugin_settings_section', '', '__return_false', 'customize-private-protected');
+
+	foreach (customize_pp_plugin_settings_fields() as $option_name => $field) {
+		register_setting(
+			'cpp_plugin_settings_group',
+			$option_name,
+			array(
+				'type' => ('checkbox' === $field['type']) ? 'boolean' : 'string',
+				'sanitize_callback' => $field['sanitize'],
+				'default' => $field['default'],
+			)
+		);
+		add_settings_field(
+			$option_name,
+			$field['label'],
+			'customize_pp_plugin_render_settings_field',
+			'customize-private-protected',
+			'cpp_plugin_settings_section',
+			array_merge($field, array('id' => $option_name))
+		);
+	}
+}
+add_action('admin_init', 'customize_pp_plugin_register_settings');
+
+function customize_pp_plugin_render_settings_field($args)
+{
+	$id = $args['id'];
+	$value = get_option($id, $args['default']);
+
+	switch ($args['type']) {
+		case 'checkbox':
+			// A hidden "0" first so an unchecked box still submits a value
+			// (browsers omit unchecked checkboxes from the POST entirely).
+			printf(
+				'<input type="hidden" name="%1$s" value="0" /><label><input type="checkbox" name="%1$s" value="1" %2$s /> %3$s</label>',
+				esc_attr($id),
+				checked($value, true, false),
+				esc_html__('Enable', 'customize-private-protected')
+			);
+			break;
+		case 'textarea':
+			printf(
+				'<textarea name="%1$s" rows="3" class="large-text">%2$s</textarea>',
+				esc_attr($id),
+				esc_textarea($value)
+			);
+			break;
+		case 'color':
+			printf(
+				'<input type="text" name="%1$s" value="%2$s" class="cpp-color-field" placeholder="#rrggbb" />',
+				esc_attr($id),
+				esc_attr($value)
+			);
+			break;
+		case 'number':
+			printf(
+				'<input type="number" min="0" name="%1$s" value="%2$s" class="small-text" />',
+				esc_attr($id),
+				esc_attr($value)
+			);
+			break;
+		default:
+			printf(
+				'<input type="text" name="%1$s" value="%2$s" class="regular-text" />',
+				esc_attr($id),
+				esc_attr($value)
+			);
+	}
+
+	if (!empty($args['description'])) {
+		printf('<p class="description">%s</p>', esc_html($args['description']));
+	}
+}
+
+function customize_pp_plugin_add_settings_page()
+{
+	add_options_page(
+		__('Customize Private & Protected', 'customize-private-protected'),
+		__('Private & Protected', 'customize-private-protected'),
+		'manage_options',
+		'customize-private-protected',
+		'customize_pp_plugin_render_settings_page'
+	);
+}
+add_action('admin_menu', 'customize_pp_plugin_add_settings_page');
+
+function customize_pp_plugin_render_settings_page()
+{
+	if (!current_user_can('manage_options')) {
+		return;
+	}
+	?>
+	<div class="wrap">
+		<h1><?php esc_html_e('Customize Private & Protected', 'customize-private-protected'); ?></h1>
+		<p><?php esc_html_e('The same settings as Appearance > Customize; use whichever is easier. Block themes hide the Customizer, so this page is here for those.', 'customize-private-protected'); ?></p>
+		<form action="options.php" method="post">
+			<?php
+			settings_fields('cpp_plugin_settings_group');
+			do_settings_sections('customize-private-protected');
+			submit_button();
+			?>
+		</form>
+		<p>
+			<?php
+			printf(
+				/* translators: %s: a link reading "Overland Innovators" */
+				esc_html__('Built by %s.', 'customize-private-protected'),
+				'<a href="https://kirkclarke.com" target="_blank" rel="noopener noreferrer">Overland Innovators</a>'
+			);
+			?>
+		</p>
+	</div>
+	<?php
+}
+
+/**
+ * Enhance the settings page's plain color text fields into the same
+ * swatch-and-picker widget the Customizer's color controls use.
+ */
+function customize_pp_plugin_settings_page_assets($hook)
+{
+	if ('settings_page_customize-private-protected' !== $hook) {
+		return;
+	}
+	wp_enqueue_style('wp-color-picker');
+	wp_enqueue_script(
+		'cpp-admin-settings',
+		plugins_url('js/cpp-admin-settings.js', __FILE__),
+		array('wp-color-picker'),
+		CPP_VERSION,
+		true
+	);
+}
+add_action('admin_enqueue_scripts', 'customize_pp_plugin_settings_page_assets');
 
 
 

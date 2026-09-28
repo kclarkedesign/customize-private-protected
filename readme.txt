@@ -5,7 +5,7 @@ Donate link: https://www.paypal.com/paypalme/KirkClarke
 Tags: private, password protected, widget, prefix, remove
 Requires at least: 5.8
 Tested up to: 7.1
-Stable tag: 1.4.0
+Stable tag: 1.5.0
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -15,6 +15,8 @@ Use WP Customize to modify elements of password protected and private posts and 
 == Description ==
 
 Use this plugin to hide or edit the prefix on your password protected or private page, add widget areas before and after the password protected form, and modify the label and submit button text. These changes are global and apply to all protected and private content respectively.
+
+Configure everything through the Customizer (Appearance > Customize) or through Settings > Private & Protected, a plain settings page for block themes, which hide the Customizer. Both edit the same settings.
 
 == Installation ==
 
@@ -35,7 +37,7 @@ Activate the plugin through the ‘Plugins’ menu in WordPress
 	
 = How to use? =
 	
-After activation, use the WordPress Theme customizer (Dashboard > Appearance > Customize OR "Theme Customizer" in the WP admin bar). For password protected pages, the widgets areas are found in the widgets section of the customizer.
+After activation, use the WordPress Theme customizer (Dashboard > Appearance > Customize OR "Theme Customizer" in the WP admin bar), or Dashboard > Settings > Private & Protected if your theme hides the Customizer. For password protected pages, the widgets areas are found in the widgets section of the customizer.
 
 == Screenshots ==
 
@@ -48,6 +50,10 @@ After activation, use the WordPress Theme customizer (Dashboard > Appearance > C
 If you'd like to support future development, [buy me a tea](https://www.paypal.com/paypalme/KirkClarke)!
 
 == Changelog ==
+
+= 1.5.0 - 09-27-2026 =
+- Feature - Added a Settings page under Settings > Private & Protected, with every option the Customizer has. Block themes (the default since WordPress 6.x) hide Appearance > Customize, so this makes every option reachable without it
+- Both places edit the same settings, so use whichever is easier
 
 = 1.4.0 - 09-27-2026 =
 - Feature - Added Customizer color pickers for the submit button's background and text color
