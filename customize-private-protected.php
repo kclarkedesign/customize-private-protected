@@ -845,14 +845,21 @@ function customize_pp_plugin_hide_form_options_condition($control)
 }
 
 
+/** Front-end option read; the `cpp_option` filter ($value, $name, $post) lets an extension override any setting per post. */
+function customize_pp_plugin_option($name, $default = false, $post = null)
+{
+	// ponytail: excerpt text, hide-from-lists and cookie lifetime are read with no post in scope, so they bypass this filter.
+	return apply_filters('cpp_option', get_option($name, $default), $name, $post);
+}
+
 /**
  * Customize Private/Protected prefix
  */
 
 function customize_pp_plugin_set_protected_prefix($format, $post = null)
 {
-	$cpp_hide_prefix = get_option('cpp_hide_prefix', false);
-	$cpp_prefix = get_option('cpp_prefix_protected', 'Protected: ');
+	$cpp_hide_prefix = customize_pp_plugin_option('cpp_hide_prefix', false, $post);
+	$cpp_prefix = customize_pp_plugin_option('cpp_prefix_protected', 'Protected: ', $post);
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = post_password_required($post) ? $cpp_prefix : '';
 
@@ -864,8 +871,8 @@ add_filter('protected_title_format', 'customize_pp_plugin_set_protected_prefix',
 
 function customize_pp_plugin_set_private_prefix($format, $post = null)
 {
-	$cpp_hide_prefix = get_option('cpp_hide_prefix', false);
-	$cpp_prefix = get_option('cpp_prefix_private', 'Private: ');
+	$cpp_hide_prefix = customize_pp_plugin_option('cpp_hide_prefix', false, $post);
+	$cpp_prefix = customize_pp_plugin_option('cpp_prefix_private', 'Private: ', $post);
 	$cpp_prefix = (true == $cpp_hide_prefix) ? '' : $cpp_prefix . ' ';
 	$cpp_prefix = (get_post_status($post) == 'private') ? $cpp_prefix : '';
 
@@ -879,12 +886,12 @@ add_filter('private_title_format', 'customize_pp_plugin_set_private_prefix', 10,
  * custom form and a theme's own form, since core renders the message
  * before calling `the_password_form`.
  */
-function customize_pp_plugin_invalid_password_text($text)
+function customize_pp_plugin_invalid_password_text($text, $post = null)
 {
-	$custom_text = get_option('cpp_invalid_password_text', '');
+	$custom_text = customize_pp_plugin_option('cpp_invalid_password_text', '', $post);
 	return ('' === $custom_text) ? $text : $custom_text;
 }
-add_filter('the_password_form_incorrect_password', 'customize_pp_plugin_invalid_password_text');
+add_filter('the_password_form_incorrect_password', 'customize_pp_plugin_invalid_password_text', 10, 2);
 
 /**
  * Override the excerpt text WordPress shows for password-protected posts in
@@ -991,7 +998,7 @@ function customize_pp_plugin_form($output, $post_arg = null, $invalid_password =
 	global $post;
 
 	$post = $post_arg ?: $post;
-	$cpp_use_default_form = get_option('cpp_use_default_form', false);
+	$cpp_use_default_form = customize_pp_plugin_option('cpp_use_default_form', false, $post);
 
 	/* Create Before form area */
 	ob_start();
@@ -1000,24 +1007,24 @@ function customize_pp_plugin_form($output, $post_arg = null, $invalid_password =
 	ob_end_clean();
 
 	if (false == $cpp_use_default_form) {
-		$cpp_intro = get_option('cpp_text_intro', 'To view this protected content, enter the password below:');
-		$cpp_label = get_option('cpp_label_text', 'Password: ');
-		$cpp_button_text = get_option('cpp_button_text', 'Enter');
+		$cpp_intro = customize_pp_plugin_option('cpp_text_intro', 'To view this protected content, enter the password below:', $post);
+		$cpp_label = customize_pp_plugin_option('cpp_label_text', 'Password: ', $post);
+		$cpp_button_text = customize_pp_plugin_option('cpp_button_text', 'Enter', $post);
 
-		$cpp_button_y_padding = get_option('cpp_button_y_padding', 10);
-		$cpp_button_x_padding = get_option('cpp_button_x_padding', 20);
+		$cpp_button_y_padding = customize_pp_plugin_option('cpp_button_y_padding', 10, $post);
+		$cpp_button_x_padding = customize_pp_plugin_option('cpp_button_x_padding', 20, $post);
 		$y_padding = ('' === $cpp_button_y_padding) ? '' : $cpp_button_y_padding . 'px ';
 		$x_padding = ('' === $cpp_button_x_padding) ? '' : $cpp_button_x_padding . 'px;';
 		$cpp_button_padding = ('' == $y_padding && '' == $x_padding) ? '' : 'padding: ' . $y_padding . $x_padding . '';
 
-		$button_bg_color = get_option('cpp_button_bg_color', '');
-		$button_text_color = get_option('cpp_button_text_color', '');
+		$button_bg_color = customize_pp_plugin_option('cpp_button_bg_color', '', $post);
+		$button_text_color = customize_pp_plugin_option('cpp_button_text_color', '', $post);
 		$cpp_button_style = $cpp_button_padding;
 		$cpp_button_style .= $button_bg_color ? 'background-color:' . $button_bg_color . ';' : '';
 		$cpp_button_style .= $button_text_color ? 'color:' . $button_text_color . ';' : '';
 
-		$input_bg_color = get_option('cpp_input_bg_color', '');
-		$input_text_color = get_option('cpp_input_text_color', '');
+		$input_bg_color = customize_pp_plugin_option('cpp_input_bg_color', '', $post);
+		$input_text_color = customize_pp_plugin_option('cpp_input_text_color', '', $post);
 		$cpp_input_style = '';
 		$cpp_input_style .= $input_bg_color ? 'background-color:' . $input_bg_color . ';' : '';
 		$cpp_input_style .= $input_text_color ? 'color:' . $input_text_color . ';' : '';
@@ -1052,7 +1059,7 @@ function customize_pp_plugin_form($output, $post_arg = null, $invalid_password =
 	}
 
 	//TODO: detect other themes that use the 'the_password_form' hook
-	return $output;
+	return apply_filters('cpp_password_form_html', $output, $post, $invalid_password);
 }
 
 add_filter('the_password_form', 'customize_pp_plugin_form', 11, 3);
@@ -1143,6 +1150,7 @@ function customize_pp_plugin_customizer_live_preview()
 	);
 
 	// Get data that you want to pass to your JavaScript
+	// ponytail: raw stored prefixes on purpose; no post is in scope at customize_preview_init, so a per-post cpp_option prefix isn't stripped in the preview. Localize later (wp_enqueue_scripts) once an extension needs it.
 	$prefixProtected = get_option('cpp_prefix_protected', 'Protected: ');
 	$prefixPrivate = get_option('cpp_prefix_private', 'Private: ');
 
