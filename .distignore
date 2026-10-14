@@ -4,3 +4,4 @@
 .distignore
 .gitattributes
 .gitignore
+RELEASING.md
