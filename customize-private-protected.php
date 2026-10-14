@@ -1150,6 +1150,7 @@ function customize_pp_plugin_customizer_live_preview()
 	);
 
 	// Get data that you want to pass to your JavaScript
+	// ponytail: raw stored prefixes on purpose; no post is in scope at customize_preview_init, so a per-post cpp_option prefix isn't stripped in the preview. Localize later (wp_enqueue_scripts) once an extension needs it.
 	$prefixProtected = get_option('cpp_prefix_protected', 'Protected: ');
 	$prefixPrivate = get_option('cpp_prefix_private', 'Private: ');
 
