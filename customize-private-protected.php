@@ -886,12 +886,12 @@ add_filter('private_title_format', 'customize_pp_plugin_set_private_prefix', 10,
  * custom form and a theme's own form, since core renders the message
  * before calling `the_password_form`.
  */
-function customize_pp_plugin_invalid_password_text($text)
+function customize_pp_plugin_invalid_password_text($text, $post = null)
 {
-	$custom_text = get_option('cpp_invalid_password_text', '');
+	$custom_text = customize_pp_plugin_option('cpp_invalid_password_text', '', $post);
 	return ('' === $custom_text) ? $text : $custom_text;
 }
-add_filter('the_password_form_incorrect_password', 'customize_pp_plugin_invalid_password_text');
+add_filter('the_password_form_incorrect_password', 'customize_pp_plugin_invalid_password_text', 10, 2);
 
 /**
  * Override the excerpt text WordPress shows for password-protected posts in
