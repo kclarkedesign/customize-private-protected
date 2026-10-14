@@ -17,7 +17,7 @@ jobs:
         uses: wordpress/plugin-check-action@v1
         with:
           exclude-directories: '.github,.wordpress-org'
-          exclude-files: '.distignore,.gitattributes,.gitignore'
+          exclude-files: '.distignore,.gitattributes,.gitignore,RELEASING.md'
 
   php-lint:
     name: PHP lint (${{ matrix.php }})

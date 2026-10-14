@@ -31,7 +31,7 @@ Extends WordPress's own built-in password-protected and private post/page settin
 * Hide password-protected posts from your homepage, archives, search results, and feeds, while keeping them reachable at their own URL
 * Or keep your theme's own password form (Divi supported) and just add the widget areas
 
-Configure everything through the Customizer (Appearance > Customize) or through Settings > Private & Protected, a plain settings page for block themes, which hide the Customizer. Both edit the same settings.
+Configure it through the Customizer (Appearance > Customize), which previews your changes as you type, or through Settings > Private & Protected, a plain settings page that works the same on every theme, block themes included. Both edit the same settings. Four options added in 1.6 (invalid password text, excerpt text, cookie lifetime, hide from lists) are on the settings page only.
 
 == Installation ==
 
@@ -66,9 +66,9 @@ Yes — leave "Hide Prefix" off and set your own text in the Private Title Prefi
 
 The Protected Intro Text, Protected Label Text, and Protected Button Text fields cover the form itself; Invalid Password Text covers what shows after a wrong attempt.
 
-= I use a block theme and don't see Appearance > Customize — where are the settings? =
+= Where are the settings? I don't see Appearance > Customize. =
 
-Go to Settings > Private & Protected instead. It has every option the Customizer has, and edits the same values.
+There are two places, and both edit the same values. Appearance > Customize > Customize Private & Protected previews your changes as you type. Settings > Private & Protected is a plain page that works on any theme, and it is the only place for Invalid Password Text, Protected Excerpt Text, Password Cookie Expires and Hide From Lists. If your site doesn't show Appearance > Customize, use the settings page.
 
 = Does this change menus or the browser tab title too? =
 

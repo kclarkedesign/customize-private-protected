@@ -508,7 +508,9 @@ add_action('customize_register', 'customize_pp_plugin_register_customizer');
 
 /**
  * Settings page (Settings API) mirroring the Customizer controls above, so
- * the plugin is usable on block themes, which hide Appearance > Customize.
+ * the plugin doesn't depend on the Customizer. Block themes hide it by
+ * default (core shows it again when a plugin hooks customize_register, as
+ * this one does), and the newest options exist only here.
  * Registered against the exact same option names the Customizer controls
  * use above, so either UI edits the same values.
  */
@@ -739,7 +741,7 @@ function customize_pp_plugin_render_settings_page()
 	?>
 	<div class="wrap">
 		<h1><?php esc_html_e('Customize Private & Protected', 'customize-private-protected'); ?></h1>
-		<p><?php esc_html_e('The same settings as Appearance > Customize; use whichever is easier. Block themes hide the Customizer, so this page is here for those.', 'customize-private-protected'); ?></p>
+		<p><?php esc_html_e('The same settings as Appearance > Customize, which previews changes as you type; use whichever is easier. The last four options are only on this page.', 'customize-private-protected'); ?></p>
 		<form action="options.php" method="post">
 			<?php
 			settings_fields('cpp_plugin_settings_group');
